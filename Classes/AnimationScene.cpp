@@ -2,23 +2,96 @@
 #include "GameOverScene.h"
 #include "SimpleAudioEngine.h"
 
-//using namespace cocos2d;
+using namespace cocos2d;
 
+static int getRandom(int low, int high)
+{
+	if ( low - high < 0x10000L )
+	      return low + ( ( random() >> 8 ) % ( high + 1 - low ) );
+
+	return low + ( random() % ( high + 1 - low ) );
+}
 
 //////////////////////////////////////////////////////////////
 
-float AnimationScene::makeBatFly( SimpleAnimObject *bat ) 
+float AnimationScene::makeBatFlyUp( SimpleAnimObject *bat )
 {
+    CCSpriteFrameCache *cache = CCSpriteFrameCache::sharedSpriteFrameCache();
 
+    //Randomize animation speed
+    float delay = (float)(getRandom(0, 0x7fff)%5+5)/80;
+    CCAnimation *animation = CCAnimation::createWithSpriteFrames(NULL, delay);
+
+    //Randomize animation frame order
+    int num = getRandom(0, 0xffff)%4 + 1;
+    for(int i=1; i<=4; ++i) {
+        char framename[50];
+        sprintf( framename, "simple_bat_0%i.png", num );
+        animation->addSpriteFrame( cache->spriteFrameByName(framename) );
+        num++;
+        if(num > 4 ) {num = 1;}
+    }
+
+    bat->stopAllActions();
+    CCRepeatForever *repAnim = CCRepeatForever::create( CCAnimate::create(animation) );
+    bat->runAction(repAnim);
+
+    bat->animationType = BAT_FLYING_UP;
+
+    return delay;
 }
 
 void AnimationScene::makeBatGlideDown( SimpleAnimObject* bat )
 {
+    CCSpriteFrameCache *cache = CCSpriteFrameCache::sharedSpriteFrameCache();
+    CCAnimation *animation = CCAnimation::createWithSpriteFrames(NULL, 100.0f);
+    animation->addSpriteFrame( cache->spriteFrameByName("simple_bat_glide") );
 
+    bat->stopAllActions();
+    CCRepeatForever *repAnim = CCRepeatForever::create( CCAnimate::create(animation) );
+    bat->runAction(repAnim);
+    bat->animationType = BAT_GLIDING_DOWN;
 }
 
-void AnimationScene::step( float dt )
+void AnimationScene::step( float delta )
 {
+    CCSize s = CCDirector::sharedDirector()->getWinSize();
+
+    SimpleAnimObject *bat = NULL;
+    CCObject* objbat;
+    CCARRAY_FOREACH( bats, objbat) {
+    	bat = (SimpleAnimObject*)objbat;
+        CCPoint position = bat->getPosition();
+        if(position.x > s.width) {
+            bat->velocity = ccp( -bat->velocity.x, bat->velocity.y );
+            bat->setFlipX(false);
+        }else if(position.x < 0) {
+            bat->velocity = ccp( -bat->velocity.x, bat->velocity.y );
+            bat->setFlipX(true);
+        }else if(position.y > s.height) {
+            bat->velocity = ccp( bat->velocity.x, -bat->velocity.y );
+            makeBatGlideDown(bat);
+        }else if(position.y < 0) {
+            bat->velocity = ccp( bat->velocity.x, -bat->velocity.y);
+            makeBatFlyUp(bat);
+        }
+
+        //randomly make them fly back up
+        if(getRandom(0, 0x7fff)%100 == 7) {
+            if(bat->animationType == BAT_GLIDING_DOWN) {
+                makeBatFlyUp(bat);
+                bat->velocity = ccp(bat->velocity.x, -bat->velocity.y);
+            }else if(bat->animationType == BAT_FLYING_UP) {
+                makeBatGlideDown(bat);
+                bat->velocity = ccp(bat->velocity.x, -bat->velocity.y);
+            }
+        }
+
+        //update bat position
+        position.x += bat->velocity.x;
+        position.y += bat->velocity.y;
+        bat->setPosition(position);
+    }
 
 }
 
@@ -56,13 +129,7 @@ CCScene* AnimationScene::scene()
 	return scene;
 }
 
-static int getRandom(int low, int high)
-{
-	if ( low - high < 0x10000L )
-	      return low + ( ( random() >> 8 ) % ( high + 1 - low ) );
 
-	return low + ( random() % ( high + 1 - low ) );
-}
 
 // on "init" you need to initialize your instance
 bool AnimationScene::init()
@@ -107,12 +174,33 @@ bool AnimationScene::init()
 
 		///////////////////////////////////////////////
 		// 2. add your codes below...
+        CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("simple_bat.plist");
         bats = CCArray::createWithCapacity( 10 );
 
+        CCSpriteBatchNode *batch1 = CCSpriteBatchNode::create( "simple_bat.png", 10 );
+        this->addChild( batch1, 2, TAG_BATS);
 
+        for(int x=0; x<10; ++x) {
+            SimpleAnimObject *bat = (SimpleAnimObject*) CCSprite::createWithTexture( batch1->getTexture(), CCRectMake(0, 0, 48, 48) );
+            batch1->addChild(bat);
+            bat->setPosition( ccp(getRandom(0, 0x7fffff)%400+40, getRandom(0, 0x7fffff)%150+150) );
+
+            float flappingSpeed = makeBatFlyUp( bat );
+
+            //Base y velocity on flappingSpeed
+            bat->velocity = ccp( (getRandom(0, 0x7fffff)%1000)/500+0.2f, 0.1f/flappingSpeed );
+            bats->addObject( bat );
+            bat->retain();
+
+            if(bat->velocity.x > 0) {
+                bat->setFlipX(true);
+            }
+        }
 
         ///////////////////////////////////////////////
 		this->setTouchEnabled(true);
+
+        this->schedule( schedule_selector(AnimationScene::step) );
 
 		// use updateGame instead of update, otherwise it will conflit with SelectorProtocol::update
 		// see http://www.cocos2d-x.org/boards/6/topics/1478

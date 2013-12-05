@@ -1,5 +1,5 @@
 #ifndef __ANIMATION_SCENE_H__
-#define __ANIMATION_SCENE_H__ 
+#define __ANIMATION_SCENE_H__
 
 #include "cocos2d.h"
 
@@ -23,12 +23,12 @@ class SimpleAnimObject : public CCSprite {
         virtual ~SimpleAnimObject() {
         };
 
-        // data 
+        // data
         int animationType;
         CCPoint velocity;
 
         virtual void update( float time ) {
-            this->m_obPosition = ccp( this->m_obPosition.x + velociy.x, this->m_obPosition.y + velociy.y );
+            this->m_obPosition = ccp( this->m_obPosition.x + velocity.x, this->m_obPosition.y + velocity.y );
         }
 
         CCRect rect() {
@@ -63,9 +63,9 @@ public:
 	void registerWithTouchDispatcher();
 	void ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
 
-    float makeBatFly( SimpleAnimObject *bat ); 
+    float makeBatFlyUp( SimpleAnimObject *bat );
     void makeBatGlideDown( SimpleAnimObject *bat );
-    void step( float dt );
+    void step( float delta );
 
 protected:
     CCArray *bats;
@@ -76,5 +76,5 @@ protected:
     int lightningRemoveCount;
 };
 
-#endif  // __ANIMATION_SCENE_H__ 
+#endif  // __ANIMATION_SCENE_H__
 
