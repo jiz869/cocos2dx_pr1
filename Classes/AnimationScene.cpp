@@ -182,6 +182,15 @@ bool AnimationScene::init()
 
 		///////////////////////////////////////////////
 		// 2. add your codes below...
+
+        // add background castle
+        CCSprite *castle = CCSprite::create("dracula_castle.jpg");
+        castle->setPosition( ccp(320, 170) );
+        castle->setScale(1.4);
+        this->addChild( castle, 0, TAG_CASTLE);
+
+
+        //bat animation
         CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("simple_bat.plist");
 
         CCSpriteBatchNode *batch1 = CCSpriteBatchNode::create( "simple_bat.png", 10 );
