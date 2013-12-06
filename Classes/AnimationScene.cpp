@@ -20,21 +20,27 @@ float AnimationScene::makeBatFlyUp( SimpleAnimObject *bat )
 
     //Randomize animation speed
     float delay = (float)(getRandom(0, 0x7fff)%5+5)/80;
-    CCAnimation *animation = CCAnimation::createWithSpriteFrames(NULL, delay);
+    //CCAnimation *animation = CCAnimation::createWithSpriteFrames(NULL, delay);
+    CCAnimation *animation = CCAnimation::create();
+    animation->setDelayPerUnit(delay);
 
     //Randomize animation frame order
     int num = getRandom(0, 0xffff)%4 + 1;
+    char framename[50]={0};
+
     for(int i=1; i<=4; ++i) {
-        char framename[50];
+
         sprintf( framename, "simple_bat_0%i.png", num );
-        animation->addSpriteFrame( cache->spriteFrameByName(framename) );
+        CCSpriteFrame *frame = cache->spriteFrameByName( framename );
+        animation->addSpriteFrame( frame );
         num++;
-        if(num > 4 ) {num = 1;}
+        if(num>4) num = 1;
     }
 
-    bat->stopAllActions();
-    CCRepeatForever *repAnim = CCRepeatForever::create( CCAnimate::create(animation) );
-    bat->runAction(repAnim);
+    bat->sprite->stopAllActions();
+    CCAnimate *animateAction = CCAnimate::create(animation);
+    CCRepeatForever *repAnim = CCRepeatForever::create( animateAction );
+    bat->sprite->runAction(repAnim);
 
     bat->animationType = BAT_FLYING_UP;
 
@@ -44,12 +50,13 @@ float AnimationScene::makeBatFlyUp( SimpleAnimObject *bat )
 void AnimationScene::makeBatGlideDown( SimpleAnimObject* bat )
 {
     CCSpriteFrameCache *cache = CCSpriteFrameCache::sharedSpriteFrameCache();
-    CCAnimation *animation = CCAnimation::createWithSpriteFrames(NULL, 100.0f);
-    animation->addSpriteFrame( cache->spriteFrameByName("simple_bat_glide") );
+    CCAnimation *animation = CCAnimation::create();
+    animation->setDelayPerUnit(100.0f);
+    animation->addSpriteFrame( cache->spriteFrameByName("simple_bat_01.png") );
 
-    bat->stopAllActions();
+    bat->sprite->stopAllActions();
     CCRepeatForever *repAnim = CCRepeatForever::create( CCAnimate::create(animation) );
-    bat->runAction(repAnim);
+    bat->sprite->runAction(repAnim);
     bat->animationType = BAT_GLIDING_DOWN;
 }
 
@@ -58,16 +65,17 @@ void AnimationScene::step( float delta )
     CCSize s = CCDirector::sharedDirector()->getWinSize();
 
     SimpleAnimObject *bat = NULL;
-    CCObject* objbat;
-    CCARRAY_FOREACH( bats, objbat) {
-    	bat = (SimpleAnimObject*)objbat;
-        CCPoint position = bat->getPosition();
+    //CCARRAY_FOREACH( bats, objbat) {
+    for( int i=0; i<10; ++i) {
+    	bat = bats[i];
+        if(bat == NULL ) break;
+        CCPoint position = bat->sprite->getPosition();
         if(position.x > s.width) {
             bat->velocity = ccp( -bat->velocity.x, bat->velocity.y );
-            bat->setFlipX(false);
+            bat->sprite->setFlipX(false);
         }else if(position.x < 0) {
             bat->velocity = ccp( -bat->velocity.x, bat->velocity.y );
-            bat->setFlipX(true);
+            bat->sprite->setFlipX(true);
         }else if(position.y > s.height) {
             bat->velocity = ccp( bat->velocity.x, -bat->velocity.y );
             makeBatGlideDown(bat);
@@ -90,7 +98,7 @@ void AnimationScene::step( float delta )
         //update bat position
         position.x += bat->velocity.x;
         position.y += bat->velocity.y;
-        bat->setPosition(position);
+        bat->sprite->setPosition(position);
     }
 
 }
@@ -170,30 +178,35 @@ bool AnimationScene::init()
 		CC_BREAK_IF(! pMenu);
 
 		// Add the menu to AnimationScene layer as a child layer.
-		this->addChild(pMenu, 1);
+		this->addChild(pMenu, 0.1);
 
 		///////////////////////////////////////////////
 		// 2. add your codes below...
         CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithFile("simple_bat.plist");
-        bats = CCArray::createWithCapacity( 10 );
 
         CCSpriteBatchNode *batch1 = CCSpriteBatchNode::create( "simple_bat.png", 10 );
         this->addChild( batch1, 2, TAG_BATS);
 
         for(int x=0; x<10; ++x) {
-            SimpleAnimObject *bat = (SimpleAnimObject*) CCSprite::createWithTexture( batch1->getTexture(), CCRectMake(0, 0, 48, 48) );
-            batch1->addChild(bat);
-            bat->setPosition( ccp(getRandom(0, 0x7fffff)%400+40, getRandom(0, 0x7fffff)%150+150) );
+            CCSprite *bat_sprite = (SimpleAnimObject*) CCSprite::create( "simple_bat.png", CCRectMake(0, 0, 48, 48) );
+        	SimpleAnimObject *bat = SimpleAnimObject::create();
+            bat->sprite = bat_sprite;
+            batch1->addChild(bat_sprite);
+
+            bat_sprite->setPosition( ccp(getRandom(0, 0x7fffff)%400+40, getRandom(0, 0x7fffff)%150+150) );
 
             float flappingSpeed = makeBatFlyUp( bat );
+            //float flappingSpeed = 1.0f;
 
             //Base y velocity on flappingSpeed
+
             bat->velocity = ccp( (getRandom(0, 0x7fffff)%1000)/500+0.2f, 0.1f/flappingSpeed );
-            bats->addObject( bat );
+            bats[x] = bat;
             bat->retain();
+            bat_sprite->retain();
 
             if(bat->velocity.x > 0) {
-                bat->setFlipX(true);
+                bat->sprite->setFlipX(true);
             }
         }
 

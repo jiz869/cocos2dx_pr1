@@ -38,6 +38,10 @@ class SimpleAnimObject : public CCSprite {
             CCPoint point = CCPointMake( this->m_obPosition.x - w/2 , this->m_obPosition.y - h/2 );
             return CCRectMake( point.x, point.y, w, h );
         };
+
+        CCSprite *sprite;
+
+        CREATE_FUNC(SimpleAnimObject);
 };
 
 //////////////////////////////////////////////////////////////////
@@ -68,7 +72,7 @@ public:
     void step( float delta );
 
 protected:
-    CCArray *bats;
+    SimpleAnimObject *bats[20];
     CCAnimation *batFlyUp;
     CCAnimation *batGlideDown;
     CCSprite *lightningBolt;
