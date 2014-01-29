@@ -261,9 +261,9 @@ void AnimationScene::ccTouchesEnded(CCSet* touches, CCEvent* event)
 
 }
 
-void AnimationScene::registerWithTouchDispatcher()
-{
+//void AnimationScene::registerWithTouchDispatcher()
+//{
 	// CCTouchDispatcher::sharedDispatcher()->addTargetedDelegate(this,0,true);
-    CCDirector::sharedDirector()->getTouchDispatcher()->addStandardDelegate(this,0);
-}
+//    CCDirector::sharedDirector()->getTouchDispatcher()->addStandardDelegate(this,0);
+//}
 

@@ -1,6 +1,7 @@
 #include "AppDelegate.h"
 //#include "HelloWorldScene.h"
 #include "AnimationScene.h"
+#include "InputScene.h"
 
 USING_NS_CC;
 
@@ -43,7 +44,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // create a scene. it's an autorelease object
     //CCScene *pScene = HelloWorld::scene();
-    CCScene *pScene = AnimationScene::scene();
+
+    //Example: Animation
+    //CCScene *pScene = AnimationScene::scene();
+
+    CCScene *pScene =InputScene::scene();
 
     // run
     pDirector->runWithScene(pScene);

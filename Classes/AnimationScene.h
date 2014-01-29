@@ -59,12 +59,12 @@ public:
 	static cocos2d::CCScene* scene();
 
 	// a selector callback
-	virtual void menuCloseCallback(cocos2d::CCObject* pSender);
+	void menuCloseCallback(cocos2d::CCObject* pSender);
 
 	// implement the "static node()" method manually
 	CREATE_FUNC(AnimationScene);
 
-	void registerWithTouchDispatcher();
+	//void registerWithTouchDispatcher();
 	void ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
 
     float makeBatFlyUp( SimpleAnimObject *bat );
