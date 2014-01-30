@@ -29,6 +29,7 @@ public:
 	void ccTouchesEnded(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
 
 protected:
+    CCSprite *_touchSprite;
 };
 
 #endif  // __INPUT_SCENE_H__

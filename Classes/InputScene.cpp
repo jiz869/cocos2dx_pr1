@@ -9,7 +9,7 @@ InputScene::~InputScene()
 	// virtual destructor will do this
 }
 
-InputScene::InputScene()
+InputScene::InputScene() : _touchSprite(0)
 {
 }
 
@@ -80,6 +80,11 @@ bool InputScene::init()
 		///////////////////////////////////////////////
 		// 2. add your codes below...
         ///////////////////////////////////////////////
+        _touchSprite = CCSprite::create("blank.png");
+        _touchSprite->setPosition(ccp(240,160));
+        _touchSprite->setTextureRect(CCRectMake(0,0,100,100));
+        _touchSprite->setColor( ccc3(0, 255, 0) );
+        this->addChild(_touchSprite);
 
 		this->setTouchEnabled(true);
         bRet = true;
@@ -112,5 +117,10 @@ void InputScene::ccTouchesEnded(CCSet* touches, CCEvent* event)
 	CCSize winSize = CCDirector::sharedDirector()->getVisibleSize();
     CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
+}
+
+bool PointInSprite(CCPoint &p, const CCSprite &sprite)
+{
+    return false;
 }
 
