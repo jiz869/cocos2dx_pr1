@@ -1,16 +1,19 @@
 #include "InputScene.h"
 
 using namespace cocos2d;
+static bool PointInSprite(CCPoint &p, CCSprite &sprite);
 
 InputScene::~InputScene()
 {
 
 	// cpp don't need to call super dealloc
 	// virtual destructor will do this
+
 }
 
-InputScene::InputScene() : _touchSprite(0)
+InputScene::InputScene() : _touchSprite(0), _spriteTS(TS_NONE)
 {
+
 }
 
 CCScene* InputScene::scene()
@@ -87,8 +90,8 @@ bool InputScene::init()
         this->addChild(_touchSprite);
 
 		this->setTouchEnabled(true);
+        //this->schedule( schedule_selector(InputScene::step) );
         bRet = true;
-
 	} while (0);
 
 	return bRet;
@@ -117,10 +120,47 @@ void InputScene::ccTouchesEnded(CCSet* touches, CCEvent* event)
 	CCSize winSize = CCDirector::sharedDirector()->getVisibleSize();
     CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
+    if(PointInSprite(location, *_touchSprite) && _spriteTS == TS_TOUCHED) {
+        _touchSprite->setColor( ccc3(0, 255, 0) );
+        _spriteTS = TS_NONE;
+    }
 }
 
-bool PointInSprite(CCPoint &p, const CCSprite &sprite)
+void InputScene::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
 {
+	CCTouch* touch = (CCTouch*)( touches->anyObject() );
+	CCPoint location = touch->getLocation();
+
+    if(PointInSprite(location, *_touchSprite)) {
+        _touchSprite->setColor( ccc3(255, 0, 0) );
+        _spriteTS = TS_TOUCHED;
+    }
+}
+
+void InputScene::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
+{
+	CCTouch* touch = (CCTouch*)( touches->anyObject() );
+	CCPoint location = touch->getLocation();
+
+    if(_spriteTS == TS_TOUCHED) {
+        _touchSprite->setPosition(location);
+    }
+}
+
+static bool PointInSprite(CCPoint &p, CCSprite &sprite)
+{
+    float sx = sprite.getPositionX();
+    float sy = sprite.getPositionY();
+    float w = sprite.getContentSize().width;
+    float h = sprite.getContentSize().height;
+    float l = sx - w/2;
+    float r = sx + w/2;
+    float b = sy - h/2;
+    float t = sy + h/2;
+
+    if( (p.x > l) && (p.x < r) && (p.y < t) && (p.y > b) )
+        return true;
+
     return false;
 }
 
