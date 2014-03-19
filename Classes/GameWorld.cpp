@@ -1,10 +1,10 @@
-#include "InputScene.h"
+#include "GameWorld.h"
 #include "AnimationScene.h"
 
 using namespace cocos2d;
 static bool PointInSprite(CCPoint &p, CCSprite &sprite);
 
-InputScene::~InputScene()
+GameWorld::~GameWorld()
 {
 
 	// cpp don't need to call super dealloc
@@ -12,12 +12,12 @@ InputScene::~InputScene()
 
 }
 
-InputScene::InputScene() : _touchSprite(0), _spriteTS(TS_NONE)
+GameWorld::GameWorld() : _touchSprite(0), _spriteTS(TS_NONE)
 {
 
 }
 
-CCScene* InputScene::scene()
+CCScene* GameWorld::scene()
 {
 	CCScene * scene = NULL;
 	do
@@ -27,7 +27,7 @@ CCScene* InputScene::scene()
 		CC_BREAK_IF(! scene);
 
 		// 'layer' is an autorelease object
-		InputScene *layer = InputScene::create();
+		GameWorld *layer = GameWorld::create();
 		CC_BREAK_IF(! layer);
 
 		// add layer as a child to scene
@@ -41,7 +41,7 @@ CCScene* InputScene::scene()
 
 
 // on "init" you need to initialize your instance
-bool InputScene::init()
+bool GameWorld::init()
 {
 	bool bRet = false;
 	do
@@ -63,7 +63,7 @@ bool InputScene::init()
 			"CloseNormal.png",
 			"CloseSelected.png",
 			this,
-			menu_selector(InputScene::menuCloseCallback));
+			menu_selector(GameWorld::menuCloseCallback));
 		CC_BREAK_IF(! pCloseItem);
 
 		// Place the menu item bottom-right conner.
@@ -78,7 +78,7 @@ bool InputScene::init()
 		pMenu->setPosition(CCPointZero);
 		CC_BREAK_IF(! pMenu);
 
-		// Add the menu to InputScene layer as a child layer.
+		// Add the menu to GameWorld layer as a child layer.
 		this->addChild(pMenu, 0.1);
 
 		///////////////////////////////////////////////
@@ -91,14 +91,14 @@ bool InputScene::init()
         this->addChild(_touchSprite);
 
 		this->setTouchEnabled(true);
-        //this->schedule( schedule_selector(InputScene::step) );
+        //this->schedule( schedule_selector(GameWorld::step) );
         bRet = true;
 	} while (0);
 
 	return bRet;
 }
 
-void InputScene::menuCloseCallback(CCObject* pSender)
+void GameWorld::menuCloseCallback(CCObject* pSender)
 {
 	// "close" menu item clicked
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
@@ -113,7 +113,7 @@ void InputScene::menuCloseCallback(CCObject* pSender)
 }
 
 // cpp with cocos2d-x
-void InputScene::ccTouchesEnded(CCSet* touches, CCEvent* event)
+void GameWorld::ccTouchesEnded(CCSet* touches, CCEvent* event)
 {
 	// Choose one of the touches to work with
 	CCTouch* touch = (CCTouch*)( touches->anyObject() );
@@ -131,7 +131,7 @@ void InputScene::ccTouchesEnded(CCSet* touches, CCEvent* event)
     }
 }
 
-void InputScene::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
+void GameWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
 {
 	CCTouch* touch = (CCTouch*)( touches->anyObject() );
 	CCPoint location = touch->getLocation();
@@ -142,7 +142,7 @@ void InputScene::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event
     }
 }
 
-void InputScene::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
+void GameWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
 {
 	CCTouch* touch = (CCTouch*)( touches->anyObject() );
 	CCPoint location = touch->getLocation();
