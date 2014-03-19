@@ -38,8 +38,10 @@ public:
 	void ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
 
 protected:
-    CCSprite *_touchSprite;
-    tTouchState _spriteTS;
+    CCSprite *sonic;
+    CCAnimation *run;
+
+    void LoadCharacter();
 };
 
 #endif  // __INPUT_SCENE_H__

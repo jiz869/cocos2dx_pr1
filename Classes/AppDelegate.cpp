@@ -2,6 +2,7 @@
 //#include "HelloWorldScene.h"
 #include "AnimationScene.h"
 #include "InputScene.h"
+#include "GameWorld.h"
 
 USING_NS_CC;
 
@@ -21,8 +22,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     pDirector->setOpenGLView(CCEGLView::sharedOpenGLView());
 
     CCSize screenSize = CCEGLView::sharedOpenGLView()->getFrameSize();
-    CCSize designSize = CCSizeMake(1280/2, 720/2);
-    //CCSize designSize = CCSizeMake(480, 320);
+    //CCSize designSize = CCSizeMake(1280/2, 720/2);
+    CCSize designSize = CCSizeMake(480, 320);
     std::vector<std::string> searchPaths;
 
     searchPaths.push_back("hd");
@@ -48,7 +49,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     //Example: Animation
     //CCScene *pScene = AnimationScene::scene();
 
-    CCScene *pScene =InputScene::scene();
+    //CCScene *pScene =InputScene::scene();
+    CCScene *pScene =GameWorld::scene();
 
     // run
     pDirector->runWithScene(pScene);

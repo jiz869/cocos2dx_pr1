@@ -9,12 +9,36 @@ GameWorld::~GameWorld()
 
 	// cpp don't need to call super dealloc
 	// virtual destructor will do this
+    this->run->release();
+}
+
+GameWorld::GameWorld() : sonic(0), run(0)
+{
 
 }
 
-GameWorld::GameWorld() : _touchSprite(0), _spriteTS(TS_NONE)
+void GameWorld::LoadCharacter()
 {
+    int w=50, h=34;
+    CCTexture2D *texture = CCTextureCache::sharedTextureCache()->addImage("sonic.png");
 
+    CCSprite *spr_obj = CCSprite::createWithTexture(texture, CCRectMake(0,0, w, h));
+    spr_obj->setPosition(ccp(100,100));
+    this->addChild(spr_obj);
+
+    //load animation
+    this->run = CCAnimation::create();
+    this->run->retain();
+    this->run->setDelayPerUnit(1.0/8.0);
+
+    for(int i=0; i<8; ++i) {
+        CCSpriteFrame *frame = CCSpriteFrame::createWithTexture(texture, CCRectMake(i*w, 0, w, h));
+        this->run->addSpriteFrame(frame);
+    }
+
+    CCAnimate *aa = CCAnimate::create(this->run);
+    CCRepeatForever *rep = CCRepeatForever::create(aa);
+    spr_obj->runAction(rep);
 }
 
 CCScene* GameWorld::scene()
@@ -84,14 +108,11 @@ bool GameWorld::init()
 		///////////////////////////////////////////////
 		// 2. add your codes below...
         ///////////////////////////////////////////////
-        _touchSprite = CCSprite::create("blank.png");
-        _touchSprite->setPosition(ccp(240,160));
-        _touchSprite->setTextureRect(CCRectMake(0,0,100,100));
-        _touchSprite->setColor( ccc3(0, 255, 0) );
-        this->addChild(_touchSprite);
-
 		this->setTouchEnabled(true);
         //this->schedule( schedule_selector(GameWorld::step) );
+        this->LoadCharacter();
+
+
         bRet = true;
 	} while (0);
 
@@ -104,11 +125,9 @@ void GameWorld::menuCloseCallback(CCObject* pSender)
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
     CCMessageBox("You pressed the close button. Windows Store Apps do not implement a close button.", "Alert");
 #else
-    CCScene *pScene = AnimationScene::scene();
-    //CCDirector::sharedDirector()->runWithScene(pScene);
-    //CCDirector::sharedDirector()->popScene();
-    CCDirector::sharedDirector()->pushScene(pScene);
-    //CCDirector::sharedDirector()->end();
+    //CCScene *pScene = AnimationScene::scene();
+    //CCDirector::sharedDirector()->pushScene(pScene);
+    CCDirector::sharedDirector()->popScene();
 #endif
 }
 
@@ -121,14 +140,6 @@ void GameWorld::ccTouchesEnded(CCSet* touches, CCEvent* event)
 
 	CCLog("++++++++after  x:%f, y:%f", location.x, location.y);
 
-	// Set up initial location of projectile
-	CCSize winSize = CCDirector::sharedDirector()->getVisibleSize();
-    CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
-
-    if(PointInSprite(location, *_touchSprite) && _spriteTS == TS_TOUCHED) {
-        _touchSprite->setColor( ccc3(0, 255, 0) );
-        _spriteTS = TS_NONE;
-    }
 }
 
 void GameWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
@@ -136,10 +147,6 @@ void GameWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
 	CCTouch* touch = (CCTouch*)( touches->anyObject() );
 	CCPoint location = touch->getLocation();
 
-    if(PointInSprite(location, *_touchSprite)) {
-        _touchSprite->setColor( ccc3(255, 0, 0) );
-        _spriteTS = TS_TOUCHED;
-    }
 }
 
 void GameWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
@@ -147,9 +154,6 @@ void GameWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
 	CCTouch* touch = (CCTouch*)( touches->anyObject() );
 	CCPoint location = touch->getLocation();
 
-    if(_spriteTS == TS_TOUCHED) {
-        _touchSprite->setPosition(location);
-    }
 }
 
 static bool PointInSprite(CCPoint &p, CCSprite &sprite)
