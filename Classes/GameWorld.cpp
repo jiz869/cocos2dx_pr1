@@ -9,7 +9,9 @@ GameWorld::~GameWorld()
 
 	// cpp don't need to call super dealloc
 	// virtual destructor will do this
+    this->sonic->release();
     this->run->release();
+    this->sonic_texture->release();
 }
 
 GameWorld::GameWorld() : sonic(0), run(0)
@@ -17,14 +19,59 @@ GameWorld::GameWorld() : sonic(0), run(0)
 
 }
 
+void GameWorld::sonicRun()
+{
+    this->sonic->stopAllActions();
+    CCAnimate *aa = CCAnimate::create(this->run);
+    CCRepeatForever *rep = CCRepeatForever::create(aa);
+    this->sonic->runAction(rep);
+}
+
+void GameWorld::sonicJumpDownDone()
+{
+    sonicRun();
+}
+
+void GameWorld::sonicJumpDown()
+{
+    int w=50, h=34;
+    float jmpduration = 0.35;
+    //this->sonic->setFlipY(true);
+    this->sonic->setTextureRect( CCRectMake(6*w, 1*h+1, w, h) );
+    CCFiniteTimeAction *movDown = CCMoveBy::create( jmpduration, ccp(0,-100) );
+    CCEaseIn *emovDown = CCEaseIn::create( (CCActionInterval*)movDown, 2 );
+    CCFiniteTimeAction *movDownDone = CCCallFuncN::create( this, callfuncN_selector(GameWorld::sonicJumpDownDone) );
+    this->sonic->runAction( CCSequence::create(emovDown, movDownDone, NULL) );
+}
+
+void GameWorld::sonicJumpUpDone()
+{
+    sonicJumpDown();
+}
+
+void GameWorld::sonicJumpUp()
+{
+    int w=50, h=34;
+    float jmpduration = 0.3;
+    this->sonic->setTextureRect( CCRectMake(5*w, 1*h+1, w, h) );
+    CCFiniteTimeAction *movUp = CCMoveBy::create( jmpduration, ccp(0,100) );
+    CCEaseOut *emovUp = CCEaseOut::create( (CCActionInterval*)movUp, 2 );
+
+    CCFiniteTimeAction *movUpDone = CCCallFuncN::create( this, callfuncN_selector(GameWorld::sonicJumpUpDone) );
+
+    this->sonic->runAction( CCSequence::create(emovUp, movUpDone, NULL) );
+}
+
 void GameWorld::LoadCharacter()
 {
     int w=50, h=34;
-    CCTexture2D *texture = CCTextureCache::sharedTextureCache()->addImage("sonic.png");
+    this->sonic_texture = CCTextureCache::sharedTextureCache()->addImage("sonic.png");
+    this->sonic_texture->retain();
 
-    CCSprite *spr_obj = CCSprite::createWithTexture(texture, CCRectMake(0,0, w, h));
-    spr_obj->setPosition(ccp(100,100));
-    this->addChild(spr_obj);
+    this->sonic = CCSprite::createWithTexture(this->sonic_texture, CCRectMake(0,0, w, h));
+    this->sonic->retain();
+    this->sonic->setPosition(ccp(100,100));
+    this->addChild(this->sonic);
 
     //load animation
     this->run = CCAnimation::create();
@@ -32,13 +79,13 @@ void GameWorld::LoadCharacter()
     this->run->setDelayPerUnit(1.0/8.0);
 
     for(int i=0; i<8; ++i) {
-        CCSpriteFrame *frame = CCSpriteFrame::createWithTexture(texture, CCRectMake(i*w, 0, w, h));
+        CCSpriteFrame *frame = CCSpriteFrame::createWithTexture(this->sonic_texture, CCRectMake(i*w, 0, w, h));
         this->run->addSpriteFrame(frame);
     }
 
     CCAnimate *aa = CCAnimate::create(this->run);
     CCRepeatForever *rep = CCRepeatForever::create(aa);
-    spr_obj->runAction(rep);
+    this->sonic->runAction(rep);
 }
 
 CCScene* GameWorld::scene()
@@ -61,8 +108,6 @@ CCScene* GameWorld::scene()
 	// return the scene
 	return scene;
 }
-
-
 
 // on "init" you need to initialize your instance
 bool GameWorld::init()
@@ -139,7 +184,8 @@ void GameWorld::ccTouchesEnded(CCSet* touches, CCEvent* event)
 	CCPoint location = touch->getLocation();
 
 	CCLog("++++++++after  x:%f, y:%f", location.x, location.y);
-
+    this->sonic->stopAllActions();
+    sonicJumpUp();
 }
 
 void GameWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
@@ -169,7 +215,6 @@ static bool PointInSprite(CCPoint &p, CCSprite &sprite)
 
     if( (p.x > l) && (p.x < r) && (p.y < t) && (p.y > b) )
         return true;
-
     return false;
 }
 
