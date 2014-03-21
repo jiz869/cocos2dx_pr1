@@ -2,35 +2,37 @@
 #define _PLAYER_H_
 
 #include "cocos2d.h"
+using namespace cocos2d;
 
-class GPlayer 
+class GPlayer : public CCObject
 {
     enum ePlayerState {
-        RUN;
+        RUN,
+        JMP_UP,
+        JMP_DOWN
     };
 
     CCTexture2D *playerTexture;
     CCAnimation *animationRun;
     CCAnimation *animationJumpUp;
-    float width;
+    CCAnimation *animationJumpDown;
+    float width;    // width of single frame in sprite sheet
     float height;
     CCSprite *sprite;
 
-public:
-    GPlayer() : width(0), height(0), state(RUN), sprite(0)
-    {
-    };
+    void JumpUpDone();
+    void JumpDownDone();
 
+public:
+    GPlayer();
     ~GPlayer();
 
     CCSprite* CreatePlayerSprite();
 
-    //sonic move/control
-    void JumpUp(); 
+    //move/control
+    void JumpUp();
     void JumpDown();
     void Run();
-    void JumpUpDone();
-    void JumpDownDone();
 
     //data
     ePlayerState state;
