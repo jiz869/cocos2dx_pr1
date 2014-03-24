@@ -20,6 +20,7 @@ CCSprite* GPlayer::CreatePlayerSprite()
 
     sprite = CCSprite::createWithTexture(this->playerTexture, CCRectMake(0,0, width, height));
     sprite->retain();
+    sprite->setAnchorPoint(ccp(0,0));
     sprite->setPosition(ccp(100,100));
 
     //load animation
@@ -61,7 +62,8 @@ void GPlayer::JumpDown()
     //this->sonic->setFlipY(true);
     sprite->stopAllActions();
     sprite->setTextureRect( CCRectMake(6*width, 1*height+1, width, height) );
-    CCFiniteTimeAction *movDown = CCMoveBy::create( jmpduration, ccp(0,-100) );
+    //CCFiniteTimeAction *movDown = CCMoveBy::create( jmpduration, ccp(0,-100) );
+    CCFiniteTimeAction *movDown = CCMoveTo::create( jmpduration, ccp(100, 100) );
     CCEaseIn *emovDown = CCEaseIn::create( (CCActionInterval*)movDown, 2 );
     CCFiniteTimeAction *movDownDone = CCCallFuncN::create( this, callfuncN_selector(GPlayer::JumpDownDone) );
     sprite->runAction( CCSequence::create(emovDown, movDownDone, NULL) );

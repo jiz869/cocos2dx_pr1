@@ -82,10 +82,12 @@ bool GameWorld::init()
 		// 2. add your codes below...
         ///////////////////////////////////////////////
 		this->setTouchEnabled(true);
-        //this->schedule( schedule_selector(GameWorld::step) );
+        this->schedule( schedule_selector(GameWorld::step) );
 
         this->addChild( player.CreatePlayerSprite() );
         player.Run();
+        mapLayer.LoadMap();
+        this->addChild( mapLayer.BatchNode());
 
         bRet = true;
 	} while (0);
@@ -145,4 +147,10 @@ static bool PointInSprite(CCPoint &p, CCSprite &sprite)
         return true;
     return false;
 }
+
+void GameWorld::step(float dt)
+{
+	mapLayer.Step(dt);
+}
+
 

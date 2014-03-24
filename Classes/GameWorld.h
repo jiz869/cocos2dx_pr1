@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 #include "Player.h"
+#include "TilesLayer.h"
 
 using namespace cocos2d;
 
@@ -18,7 +19,7 @@ public:
 	GameWorld();
 	~GameWorld();
 
-    //void step(float dt);
+    void step(float dt);
 
 	// Here's a difference. Method 'init' in cocos2d-x returns bool,
     // instead of returning 'id' in cocos2d-iphone
@@ -40,6 +41,7 @@ public:
 
 protected:
     GPlayer player;
+    GTilesLayer mapLayer;
 };
 
 #endif  // __INPUT_SCENE_H__
