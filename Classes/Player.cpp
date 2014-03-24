@@ -31,7 +31,6 @@ CCSprite* GPlayer::CreatePlayerSprite()
         CCSpriteFrame *frame = CCSpriteFrame::createWithTexture(this->playerTexture, CCRectMake(i*width, 0, width, height));
         animationRun->addSpriteFrame(frame);
     }
-
     return sprite;
 }
 
