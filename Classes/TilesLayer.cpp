@@ -27,15 +27,20 @@ void GTilesLayer::LoadMap()
 
     // player 50x34 at position 100,100, achor point 0, 0
     int i=0;
-    for(i=0; i<5; ++i) {
+    for(i=0; i<100; ++i) {
         int idx = i%3;
-        CCSprite *tile = CCSprite::createWithTexture( texture, CCRectMake(idx*32, 224, 32, 32) );
+        //CCSprite *tile = CCSprite::createWithTexture( texture, CCRectMake(0, 224, 32, 32) );
+        CCSprite *tile = CCSprite::createWithTexture( texture, CCRectMake(384, 321, 32, 32) );
         tile->setOpacity(100);
         batchNode->addChild(tile);
         tile->setAnchorPoint(ccp(0.0, 0.0));
         tile->setPosition( ccp(32*i, 100-32) );
+        rightMostPosition = ccp(32*i, 100-32);
+        if(rightMostPosition.x > 479) {
+        	break;
+        }
     }
-    rightMostPosition = ccp(32*(i-1), 100-32);
+
 }
 
 void GTilesLayer::SetVelocity(CCPoint v)
@@ -49,6 +54,7 @@ void GTilesLayer::Step(float dt)
     CCObject *obj = NULL;
     CCArray *tileArray = batchNode->getChildren();
     CCPoint rmp = ccp(0.0, 100-32);
+    CCSprite *newtile=NULL;
     CCARRAY_FOREACH(tileArray, obj)
     {
     	CCSprite *tile = (CCSprite*)obj;
@@ -59,22 +65,15 @@ void GTilesLayer::Step(float dt)
             if( pos.x > rmp.x )
                 rmp = pos;
         }else {
-            batchNode->removeChild(tile, true);
+            newtile = tile;
         }
     }
     rightMostPosition = rmp;
 
-    int idx = 0;
-    while ( rightMostPosition.x < 480 ) {
-        //idx = idx%3;
-        CCSprite *tile = CCSprite::createWithTexture( texture, CCRectMake((idx%3)*32, 224, 32, 32) );
-        tile->setOpacity(100);
-        batchNode->addChild(tile);
-        tile->setAnchorPoint(ccp(0.0, 0.0));
-        tile->setPosition( ccp( rightMostPosition.x + 32, 100-32) );
-        CCPoint p = tile->getPosition();
-        CCLog("Add new tile at (x: %f, y: %f)", p.x, p.y);
-        idx++;
+    if ( newtile != NULL ) {
+        newtile->setPosition( ccp( rightMostPosition.x + 32, 100-32) );
+        CCPoint p = newtile->getPosition();
+        //CCLog("reset newtile position to (x: %f, y: %f)", p.x, p.y);
         rightMostPosition.x += 32;
     }
 }
