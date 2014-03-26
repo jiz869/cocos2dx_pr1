@@ -1,6 +1,6 @@
 #include "Box.h"
 
-GBox::GBox() 
+GBox::GBox() : batchNode(0), texture(0)
 {
 }
 

@@ -3,16 +3,20 @@
 #include "GameObject.h"
 
 // box is a game object which can be regarded as a large box
+// position at left/bottom corner
 
 class GBox : public GObject {
+protected:
     CCSpriteBatchNode *batchNode;
     CCTexture2D *texture;
     CCPoint velocity;
 public:
+    GBox();
+    ~GBox();
     virtual void Load(char *name) {
     }
 
-    virtual void SetPosition(float x, float y) {
+    virtual void SetObjectPosition(float x, float y) {
     }
 
     virtual CCNode* Node() {
@@ -22,8 +26,12 @@ public:
     virtual void Step(float dt) {
     }
 
-    int width;
-    int height;
+    virtual void SetVelocity( CCPoint v) {
+    	velocity = v;
+    }
+
+    float width;
+    float height;
 };
 
 #endif;

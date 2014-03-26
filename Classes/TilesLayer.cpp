@@ -12,13 +12,14 @@ GTilesLayer::GTilesLayer() : velocity(-3.0, 0.0), batchNode(0), texture(0)
 
 GTilesLayer::~GTilesLayer()
 {
-    batchNode->release();
+    //batchNode->release();
 }
 
 //load map from a map file and create corresponding sprites to batchnode
 void GTilesLayer::LoadMap()
 {
-    //load image
+	//load image
+#if 0
     batchNode = CCSpriteBatchNode::create("tiles.png", 30);
     texture = batchNode->getTexture();
     batchNode->retain();
@@ -40,6 +41,7 @@ void GTilesLayer::LoadMap()
         	break;
         }
     }
+#endif
 
 }
 
@@ -51,6 +53,7 @@ void GTilesLayer::SetVelocity(CCPoint v)
 void GTilesLayer::Step(float dt)
 {
 	//CCLog("GTilesLayer step %f", dt);
+#if 0
     CCObject *obj = NULL;
     CCArray *tileArray = batchNode->getChildren();
     CCPoint rmp = ccp(0.0, 100-32);
@@ -76,5 +79,7 @@ void GTilesLayer::Step(float dt)
         //CCLog("reset newtile position to (x: %f, y: %f)", p.x, p.y);
         rightMostPosition.x += 32;
     }
+#endif
+
 }
 

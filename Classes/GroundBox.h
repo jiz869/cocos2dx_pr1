@@ -13,7 +13,7 @@ public:
     ~GGroundBox();
 
     virtual void Load(char *name);
-    virtual void SetPosition(float x, float y);
+    virtual void SetObjectPosition(float x, float y);
     virtual void Step(float dt);
 
 };

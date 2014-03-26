@@ -2,20 +2,26 @@
 #define _GAME_OBJECT_H_
 
 #include "cocos2d.h"
-using namespaces cocos2d;
+using namespace cocos2d;
 
 class GObject : public CCNode {
-pulic:
-    GObject();
+public:
+    GObject() {
+    }
+
     virtual ~GObject(){
     }
+
     virtual void Load(char *name) {
     }
-    virtual void SetPosition(float x, float y) {
+
+    virtual void SetObjectPosition(float x, float y) {
     }
+
     virtual CCNode* Node() {
         return NULL;
     }
+
     virtual void Step(float dt) {
     }
 
