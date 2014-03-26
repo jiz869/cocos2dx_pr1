@@ -9,11 +9,16 @@ class GBox : public GObject {
     CCTexture2D *texture;
     CCPoint velocity;
 public:
-    virtual void Load();
-    virtual void SetPosition(float x, float y);
+    virtual void Load(char *name) {
+    }
+
+    virtual void SetPosition(float x, float y) {
+    }
+
     virtual CCNode* Node() {
         return (CCNode*)batchNode;
     }
+
     virtual void Step(float dt) {
     }
 
