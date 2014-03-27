@@ -41,6 +41,9 @@ public:
 	void ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
 	void ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event);
 
+    //data
+    CCSize designSize;
+
 protected:
     GPlayer player;
     GTilesLayer mapLayer;
@@ -49,7 +52,11 @@ protected:
     vector<GObject*> mapObjects;
 
     void InitMap();
+    void RenewMap();
+
+    //debug 
+    void dump_mapObjects();
 };
 
-#endif  // __INPUT_SCENE_H__
+#endif  
 

@@ -33,6 +33,7 @@ public:
     void JumpUp();
     void JumpDown();
     void Run();
+    void GetAABB(CCPoint &o, float w, float h);
 
     //data
     ePlayerState state;

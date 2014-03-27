@@ -30,8 +30,9 @@ public:
     	velocity = v;
     }
 
-    float width;
-    float height;
+    virtual void GetAABB(CCPoint &, float &w, float &h);
+
+
 };
 
 #endif;

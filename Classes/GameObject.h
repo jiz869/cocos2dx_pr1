@@ -33,7 +33,12 @@ public:
     virtual void Step(float dt) {
     }
 
+    virtual void GetAABB(CCPoint &o, float &w, float &h) {
+    }
+
     ObjectState state;
+    float width;
+    float height;
 };
 
 

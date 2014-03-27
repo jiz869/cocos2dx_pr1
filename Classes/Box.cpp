@@ -8,4 +8,11 @@ GBox::~GBox()
 {
 }
 
+void GBox::GetAABB(CCPoint &o, float &w, float &h)
+{
+    o = batchNode->getPosition();
+    w = width;
+    h = height;
+}
+
 
