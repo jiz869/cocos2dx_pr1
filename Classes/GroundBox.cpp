@@ -37,6 +37,7 @@ void GGroundBox::LoadStoneGround()
 
     width = 3*32;
     height = 3*32;
+    state = OBJ_LOADED;
 }
 
 void GGroundBox::Load(char *name)
@@ -54,7 +55,11 @@ void GGroundBox::SetObjectPosition(float x, float y)
 void GGroundBox::Step(float dt)
 {
     CCPoint pos = batchNode->getPosition();
+    CCPoint newpos = pos + velocity;
     batchNode->setPosition( pos + velocity );
+    if( newpos.x+width < 0 || newpos.y + height < 0 ) {
+        state = OBJ_INACTIVE;
+    }
 }
 
 

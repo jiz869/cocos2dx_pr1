@@ -4,9 +4,17 @@
 #include "cocos2d.h"
 using namespace cocos2d;
 
+typedef enum{
+    OBJ_INVALID,
+    OBJ_LOADED,
+    OBJ_ACTIVE,
+    OBJ_INACTIVE
+}ObjectState;
+
 class GObject : public CCNode {
 public:
-    GObject() {
+    GObject() : state(OBJ_INVALID) {
+
     }
 
     virtual ~GObject(){
@@ -25,6 +33,7 @@ public:
     virtual void Step(float dt) {
     }
 
+    ObjectState state;
 };
 
 

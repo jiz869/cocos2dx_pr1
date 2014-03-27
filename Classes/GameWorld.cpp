@@ -92,13 +92,6 @@ bool GameWorld::init()
 
         InitMap();
 
-        /*
-        ground.Load("stone ground");
-        ground.SetObjectPosition(80, 100 - ground.height);
-        this->addChild(ground.Node());
-        ground.SetVelocity(ccp(-1, 0));
-        */
-
         bRet = true;
 	} while (0);
 
@@ -170,11 +163,14 @@ void GameWorld::InitMap()
     this->addChild(gbox->Node());
 }
 
+void GameWorld::RenewMap()
+{
+}
+
 void GameWorld::step(float dt)
 {
 	//mapLayer.Step(dt);
     unsigned int n = mapObjects.size();
-	//ground.Step(dt);
     for(int i=0; i<n; ++i) {
         GObject *obj = mapObjects[i];
         obj->Step(dt);

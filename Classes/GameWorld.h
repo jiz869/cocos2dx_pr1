@@ -44,7 +44,8 @@ public:
 protected:
     GPlayer player;
     GTilesLayer mapLayer;
-    GGroundBox ground;
+
+    //map data 
     vector<GObject*> mapObjects;
 
     void InitMap();
