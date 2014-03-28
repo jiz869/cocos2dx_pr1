@@ -9,6 +9,10 @@
 
 using namespace cocos2d;
 using namespace std;
+
+struct InterSectionResult{
+    bool intersect;
+};
 //////////////////////////////////////////////////////////////////
 class GameWorld : public cocos2d::CCLayerColor
 {
@@ -53,6 +57,7 @@ protected:
 
     void InitMap();
     void RenewMap();
+    void PhysicsStep(float);
 
     //debug 
     void dump_mapObjects();

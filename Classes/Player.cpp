@@ -80,12 +80,14 @@ void GPlayer::JumpDownDone()
     Run();
 }
 
-void GetAABB(CCPoint &o, float &w, float &h)
+void GPlayer::GetAABB(CCPoint &o, float &w, float &h)
 {
     o = sprite->getPosition();
     w = width;
     h = height;
 
     //player has anchor point (0.5, 0.5)
+    o.x -= w/2;
+    o.y -= h/2;
 }
 

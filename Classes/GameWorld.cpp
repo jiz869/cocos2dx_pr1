@@ -252,6 +252,19 @@ void GameWorld::RenewMap()
     }
 }
 
+void GameWorld::PhysicsStep(float dt)
+{
+    CCPoint player_pos;
+    float player_w, player_h;
+    player.GetAABB(player_pos, player_w, player_h);
+
+    unsigned int n = mapObjects.size();
+    for(int i=0; i<n; ++i) {
+        GObject *obj = mapObjects[i];
+        
+    }
+}
+
 void GameWorld::step(float dt)
 {
 	//mapLayer.Step(dt);
@@ -263,6 +276,7 @@ void GameWorld::step(float dt)
         obj->Step(dt);
     }
     RenewMap();
+    PhysicsStep(float dt);
 }
 
 
