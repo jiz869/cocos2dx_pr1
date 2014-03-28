@@ -42,32 +42,29 @@ void GPlayer::Run()
     CCRepeatForever *rep = CCRepeatForever::create(aa);
     sprite->runAction(rep);
     state = RUN;
+    velocity = ccp(0.0, 0.0);
+    gravity = ccp(0.0, 0.0);
 }
 
 void GPlayer::JumpUp()
 {
-    float jmpduration = 0.3;
-    sprite->stopAllActions();
-    sprite->setTextureRect( CCRectMake(5*width, 1*height+1, width, height) );
-    CCFiniteTimeAction *movUp = CCMoveBy::create( jmpduration, ccp(0,100) );
-    CCEaseOut *emovUp = CCEaseOut::create( (CCActionInterval*)movUp, 2 );
-    CCFiniteTimeAction *movUpDone = CCCallFuncN::create( this, callfuncN_selector(GPlayer::JumpUpDone) );
-    sprite->runAction( CCSequence::create(emovUp, movUpDone, NULL) );
-    state = JMP_UP;
+    if(!on_the_air(state)) {
+        sprite->stopAllActions();
+        sprite->setTextureRect( CCRectMake(5*width, 1*height+1, width, height) );
+        state = JMP_UP;
+        velocity = ccp(0.0, 10.0);
+        //gravity = ccp(0.0, -1.0);
+    }
 }
 
 void GPlayer::JumpDown()
 {
-    float jmpduration = 0.35;
     //this->sonic->setFlipY(true);
     sprite->stopAllActions();
     sprite->setTextureRect( CCRectMake(6*width, 1*height+1, width, height) );
-    //CCFiniteTimeAction *movDown = CCMoveBy::create( jmpduration, ccp(0,-100) );
-    CCFiniteTimeAction *movDown = CCMoveTo::create( jmpduration, ccp(100, 100) );
-    CCEaseIn *emovDown = CCEaseIn::create( (CCActionInterval*)movDown, 2 );
-    CCFiniteTimeAction *movDownDone = CCCallFuncN::create( this, callfuncN_selector(GPlayer::JumpDownDone) );
-    sprite->runAction( CCSequence::create(emovDown, movDownDone, NULL) );
+    gravity = ccp(0.0, -0.5);
     state = JMP_DOWN;
+
 }
 
 void GPlayer::JumpUpDone()
@@ -85,9 +82,29 @@ void GPlayer::GetAABB(CCPoint &o, float &w, float &h)
     o = sprite->getPosition();
     w = width;
     h = height;
-
-    //player has anchor point (0.5, 0.5)
-    o.x -= w/2;
-    o.y -= h/2;
 }
+
+void GPlayer::SetPlayerPosition(float x, float y)
+{
+    sprite->setPosition(ccp(x,y));
+}
+
+void GPlayer::Step(float dt)
+{
+    CCPoint pos = sprite->getPosition();
+    pos = pos + velocity;
+    sprite->setPosition(pos);
+
+    if(state == JMP_UP || state == JMP_DOWN) {
+        velocity = velocity + gravity;
+        if(velocity.y <= 0.0) {
+            state = JMP_DOWN;
+        }
+    }
+    CCLog("player step position(%f, %f) velocity(%f, %f) gravity(%f, %f) state %d",
+    		pos.x, pos.y, velocity.x, velocity.y, gravity.x, gravity.y, state);
+}
+
+
+
 

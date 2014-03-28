@@ -6,11 +6,6 @@ using namespace cocos2d;
 
 class GPlayer : public CCObject
 {
-    enum ePlayerState {
-        RUN,
-        JMP_UP,
-        JMP_DOWN
-    };
 
     CCTexture2D *playerTexture;
     CCAnimation *animationRun;
@@ -20,19 +15,30 @@ class GPlayer : public CCObject
     float height;
     CCSprite *sprite;
 
+    //physics
+    CCPoint velocity;
+    CCPoint gravity;
+
     void JumpUpDone();
     void JumpDownDone();
 
 public:
+    enum ePlayerState {
+        RUN,
+        JMP_UP,
+        JMP_DOWN
+    };
     GPlayer();
     ~GPlayer();
 
     CCSprite* CreatePlayerSprite();
 
     //move/control
+    void SetPlayerPosition(float x, float y);
     void JumpUp();
     void JumpDown();
     void Run();
+    void Step(float);
     
     //collision detection
     void GetAABB(CCPoint &o, float &w, float &h);
@@ -40,6 +46,7 @@ public:
     //data
     ePlayerState state;
 };
+#define on_the_air(s) (s == JMP_UP || s == JMP_DOWN)
 
 #endif
 

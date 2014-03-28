@@ -5,6 +5,14 @@
 using namespace cocos2d;
 static bool PointInSprite(CCPoint &p, CCSprite &sprite);
 
+static int getRandom(int low, int high)
+{
+	if ( low - high < 0x10000L )
+	      return low + ( ( random() >> 8 ) % ( high + 1 - low ) );
+
+	return low + ( random() % ( high + 1 - low ) );
+}
+
 GameWorld::~GameWorld()
 {
 
@@ -127,14 +135,14 @@ void GameWorld::ccTouchesEnded(CCSet* touches, CCEvent* event)
 	CCPoint location = touch->getLocation();
 
 	CCLog("++++++++after  x:%f, y:%f", location.x, location.y);
-    player.JumpUp();
+
 }
 
 void GameWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
 {
 	CCTouch* touch = (CCTouch*)( touches->anyObject() );
 	CCPoint location = touch->getLocation();
-
+	player.JumpUp();
 }
 
 void GameWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
@@ -160,12 +168,12 @@ static bool PointInSprite(CCPoint &p, CCSprite &sprite)
     return false;
 }
 
-#define AddStoneGround(x) \
+#define AddStoneGround(x, y_offset) \
 { \
     gbox =  new GGroundBox(); \
     gbox->Load("stone ground"); \
-    gbox->SetObjectPosition((x), 100 - gbox->height); \
-    gbox->SetVelocity(ccp(-1, 0)); \
+    gbox->SetObjectPosition((x), 100 - gbox->height + (y_offset)); \
+    gbox->SetVelocity(ccp(-2, 0)); \
     mapObjects.push_back(gbox); \
     this->addChild(gbox->Node()); \
 }
@@ -173,35 +181,12 @@ static bool PointInSprite(CCPoint &p, CCSprite &sprite)
 
 void GameWorld::InitMap()
 {
-    GGroundBox *gbox =  new GGroundBox();
+    GGroundBox *gbox;
 
-    gbox->Load("stone ground");
-    gbox->SetObjectPosition(200, 100 - gbox->height);
-    gbox->SetVelocity(ccp(-1, 0));
-    mapObjects.push_back(gbox);
-
-    this->addChild(gbox->Node());
-
-    gbox =  new GGroundBox();
-
-    gbox->Load("stone ground");
-    gbox->SetObjectPosition(80, 100 - gbox->height);
-    gbox->SetVelocity(ccp(-1, 0));
-    mapObjects.push_back(gbox);
-
-    this->addChild(gbox->Node());
-
-    gbox =  new GGroundBox();
-
-    gbox->Load("stone ground");
-    gbox->SetObjectPosition(320, 100 - gbox->height);
-    gbox->SetVelocity(ccp(-1, 0));
-    mapObjects.push_back(gbox);
-
-    this->addChild(gbox->Node());
-
-    AddStoneGround(450);
-    AddStoneGround(600);
+    AddStoneGround(100, 0);
+    AddStoneGround(250, 0);
+    AddStoneGround(400, 30);
+    AddStoneGround(550, -30);
 }
 
 //debug
@@ -243,25 +228,78 @@ void GameWorld::RenewMap()
 
     //to do: add logic to generate new map objects
     if(pos.x+w < designSize.width) {
+    	float y_offset = (float)getRandom(-30, 30);
         if(first_obj->state != OBJ_INACTIVE) {
             CCLog("No invalid object available!");
         }else{
-            first_obj->SetObjectPosition(pos.x+w+32, 100-first_obj->height);
+            first_obj->SetObjectPosition(pos.x+w+80, 100-first_obj->height + y_offset);
             first_obj->state = OBJ_ACTIVE;
         }
     }
 }
+
+#define segment_overlap(l1, r1, l2, r2) \
+    ( (((l1) < (r2)) && ((l1) > (l2))) || \
+      (((r1) < (r2)) && ((r1) > (l2))) || \
+      (((r2) < (r1)) && ((r2) > (l1))) || \
+      (((l2) < (r1)) && ((l2) > (l1))) )
+
 
 void GameWorld::PhysicsStep(float dt)
 {
     CCPoint player_pos;
     float player_w, player_h;
     player.GetAABB(player_pos, player_w, player_h);
+    CCPoint player_rb(player_pos.x + player_w - 1,
+                      player_pos.y);
+    CCPoint player_lb(player_pos.x, player_pos.y);
 
+    //check walk intersect with player
     unsigned int n = mapObjects.size();
+    GObject *on_obj=0;
+    CCPoint pos;
+    float w, h;
     for(int i=0; i<n; ++i) {
         GObject *obj = mapObjects[i];
-        
+        obj->GetAABB(pos, w, h);
+
+        //bottom test
+        //check x
+        if( segment_overlap(player_lb.x+11, player_rb.x-12, pos.x+1, pos.x+w-2 ) ) {
+            //check y
+            if( segment_overlap(player_pos.y-4, player_pos.y+player_h, pos.y, pos.y+h-1) ) {
+                //intersects
+                on_obj = obj;
+                /*
+                CCLog("player_lb (%f, %f) player_rb(%f, %f)",
+                        player_lb.x, player_lb.y, player_rb.x, player_rb.y);
+                CCLog("intersect with object (%f, %f) width %f height %f",
+                        pos.x, pos.y, w, h);
+                        */
+                break;
+            }
+        }
+
+        //right test
+        if( segment_overlap(player_pos.y-6, player_pos.y+player_h, pos.y, pos.y+h-1) ) {
+            if( segment_overlap(player_lb.x+15, player_rb.x-20, pos.x+1, pos.x+w-2 ) ) {
+                CCLog("bumped into wall");
+            }
+        }
+    }
+
+    if(on_obj) {
+        if(player.state != GPlayer::RUN) {
+            CCLog("intersect at a solid tile. set player run");
+            player.Run();
+            player.SetPlayerPosition(player_pos.x, pos.y+h);
+        }
+    }else{
+        //player is on the air
+        if( player.state != GPlayer::JMP_DOWN ) {
+            CCLog("player on the air. set player jump down");
+            player.JumpDown();
+        }
     }
 }
 
@@ -276,7 +314,8 @@ void GameWorld::step(float dt)
         obj->Step(dt);
     }
     RenewMap();
-    PhysicsStep(float dt);
+    player.Step(dt);
+    PhysicsStep(dt);
 }
 
 
