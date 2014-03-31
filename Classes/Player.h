@@ -19,9 +19,6 @@ class GPlayer : public CCObject
     CCPoint velocity;
     CCPoint gravity;
 
-    void JumpUpDone();
-    void JumpDownDone();
-
 public:
     enum ePlayerState {
         RUN,
@@ -35,11 +32,26 @@ public:
 
     //move/control
     void SetPlayerPosition(float x, float y);
+
+    CCPoint GetPlayerPosition() {
+    	return sprite->getPosition();
+    }
+
+    CCPoint GetPlayerVelocity() {
+        return velocity;
+    }
+    void SetPlayerVelocity(float x, float y) {
+        velocity = ccp(x, y);
+    }
+
     void JumpUp();
     void JumpDown();
     void Run();
+    void EnableGravity(float x, float y) {
+        gravity = ccp(x, y);
+    }
     void Step(float);
-    
+
     //collision detection
     void GetAABB(CCPoint &o, float &w, float &h);
 

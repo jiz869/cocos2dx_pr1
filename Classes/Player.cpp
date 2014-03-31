@@ -52,7 +52,7 @@ void GPlayer::JumpUp()
         sprite->stopAllActions();
         sprite->setTextureRect( CCRectMake(5*width, 1*height+1, width, height) );
         state = JMP_UP;
-        velocity = ccp(0.0, 10.0);
+        velocity = ccp(0.0, 9.0);
         //gravity = ccp(0.0, -1.0);
     }
 }
@@ -62,19 +62,7 @@ void GPlayer::JumpDown()
     //this->sonic->setFlipY(true);
     sprite->stopAllActions();
     sprite->setTextureRect( CCRectMake(6*width, 1*height+1, width, height) );
-    gravity = ccp(0.0, -0.5);
     state = JMP_DOWN;
-
-}
-
-void GPlayer::JumpUpDone()
-{
-    JumpDown();
-}
-
-void GPlayer::JumpDownDone()
-{
-    Run();
 }
 
 void GPlayer::GetAABB(CCPoint &o, float &w, float &h)
@@ -95,14 +83,13 @@ void GPlayer::Step(float dt)
     pos = pos + velocity;
     sprite->setPosition(pos);
 
-    if(state == JMP_UP || state == JMP_DOWN) {
-        velocity = velocity + gravity;
-        if(velocity.y <= 0.0) {
-            state = JMP_DOWN;
-        }
+    velocity = velocity + gravity;
+    if(velocity.y < 0.0) {
+        JumpDown();
     }
-    CCLog("player step position(%f, %f) velocity(%f, %f) gravity(%f, %f) state %d",
-    		pos.x, pos.y, velocity.x, velocity.y, gravity.x, gravity.y, state);
+
+    //CCLog("player step position(%f, %f) velocity(%f, %f) gravity(%f, %f) state %d",
+    //		pos.x, pos.y, velocity.x, velocity.y, gravity.x, gravity.y, state);
 }
 
 

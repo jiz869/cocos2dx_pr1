@@ -102,6 +102,7 @@ bool GameWorld::init()
         this->schedule( schedule_selector(GameWorld::step) );
 
         this->addChild( player.CreatePlayerSprite() );
+        player.SetPlayerPosition(80, 120);
         player.Run();
 
         //mapLayer.LoadMap();
@@ -135,7 +136,10 @@ void GameWorld::ccTouchesEnded(CCSet* touches, CCEvent* event)
 	CCPoint location = touch->getLocation();
 
 	CCLog("++++++++after  x:%f, y:%f", location.x, location.y);
-
+    CCPoint v = player.GetPlayerVelocity();
+    if(v.y > 3  ) {
+       player.SetPlayerVelocity(0, 3);
+    }
 }
 
 void GameWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event)
@@ -172,8 +176,8 @@ static bool PointInSprite(CCPoint &p, CCSprite &sprite)
 { \
     gbox =  new GGroundBox(); \
     gbox->Load("stone ground"); \
-    gbox->SetObjectPosition((x), 100 - gbox->height + (y_offset)); \
-    gbox->SetVelocity(ccp(-2, 0)); \
+    gbox->SetObjectPosition((x),30 - gbox->height + (y_offset)); \
+    gbox->SetVelocity(ccp(-4, 0)); \
     mapObjects.push_back(gbox); \
     this->addChild(gbox->Node()); \
 }
@@ -184,9 +188,10 @@ void GameWorld::InitMap()
     GGroundBox *gbox;
 
     AddStoneGround(100, 0);
-    AddStoneGround(250, 0);
-    AddStoneGround(400, 30);
-    AddStoneGround(550, -30);
+    AddStoneGround(196, 0);
+    AddStoneGround(350, 10);
+    AddStoneGround(470, -10);
+    AddStoneGround(600, 0);
 }
 
 //debug
@@ -228,11 +233,12 @@ void GameWorld::RenewMap()
 
     //to do: add logic to generate new map objects
     if(pos.x+w < designSize.width) {
-    	float y_offset = (float)getRandom(-30, 30);
+    	float y_offset = (float)getRandom(-10, 10);
+    	float x_gap = (float)getRandom(50, 150);
         if(first_obj->state != OBJ_INACTIVE) {
             CCLog("No invalid object available!");
         }else{
-            first_obj->SetObjectPosition(pos.x+w+80, 100-first_obj->height + y_offset);
+            first_obj->SetObjectPosition(pos.x+w+x_gap, 100-first_obj->height + y_offset);
             first_obj->state = OBJ_ACTIVE;
         }
     }
@@ -243,6 +249,64 @@ void GameWorld::RenewMap()
       (((r1) < (r2)) && ((r1) > (l2))) || \
       (((r2) < (r1)) && ((r2) > (l1))) || \
       (((l2) < (r1)) && ((l2) > (l1))) )
+
+bool GameWorld::SideTest(GObject *obj)
+{
+    //collision test of player's right side and object's left side
+    CCPoint player_pos;
+    float player_w, player_h;
+    player.GetAABB(player_pos, player_w, player_h);
+
+    CCPoint pos;
+    float w, h;
+    obj->GetAABB(pos, w, h);
+
+    CCPoint o1(pos.x, pos.y);
+    CCPoint o2(pos.x, pos.y+h-3);
+    CCPoint p1(player_pos.x+5, player_pos.y+15);
+    CCPoint p2(player_pos.x+player_w-12, player_pos.y+15);
+
+    //if speed is very fast, tunneling could happen
+    if(o1.x >= p1.x && o1.x <= p2.x) {
+        if(p1.y >= o1.y && p1.y <= o2.y) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool GameWorld::BottomTest(GObject *obj)
+{
+    CCPoint player_pos;
+    float player_w, player_h;
+    player.GetAABB(player_pos, player_w, player_h);
+
+    CCPoint pos;
+    float w, h;
+    obj->GetAABB(pos, w, h);
+
+    CCPoint p1(player_pos.x+player_w-12, player_pos.y-4);
+    CCPoint p2(player_pos.x+player_w-12, player_pos.y+player_h-15);
+    CCPoint o1(pos.x, pos.y+h-1);
+    CCPoint o2(pos.x+w-1, pos.y+h-1);
+    if(o1.y > p1.y && o1.y < p2.y) {
+        if(o1.x < p1.x && o2.x > p1.x){
+            return true;
+        }
+    }
+
+    //left bottom sensor segment
+    p1 = ccp(player_pos.x+12, player_pos.y-4);
+    p2 = ccp(player_pos.x+12, player_pos.y+player_h-15);
+    if(o1.y > p1.y && o1.y < p2.y) {
+        if(o1.x < p1.x && o2.x > p1.x){
+            return true;
+        }
+    }
+
+    return false;
+}
 
 
 void GameWorld::PhysicsStep(float dt)
@@ -263,29 +327,18 @@ void GameWorld::PhysicsStep(float dt)
         GObject *obj = mapObjects[i];
         obj->GetAABB(pos, w, h);
 
-        //bottom test
-        //check x
-        if( segment_overlap(player_lb.x+11, player_rb.x-12, pos.x+1, pos.x+w-2 ) ) {
-            //check y
-            if( segment_overlap(player_pos.y-4, player_pos.y+player_h, pos.y, pos.y+h-1) ) {
-                //intersects
-                on_obj = obj;
-                /*
-                CCLog("player_lb (%f, %f) player_rb(%f, %f)",
-                        player_lb.x, player_lb.y, player_rb.x, player_rb.y);
-                CCLog("intersect with object (%f, %f) width %f height %f",
-                        pos.x, pos.y, w, h);
-                        */
-                break;
-            }
+        //side test
+        if( SideTest(obj) ) {
+            CCLog("bump into wall");
+            CCDirector::sharedDirector()->popScene();
         }
 
-        //right test
-        if( segment_overlap(player_pos.y-6, player_pos.y+player_h, pos.y, pos.y+h-1) ) {
-            if( segment_overlap(player_lb.x+15, player_rb.x-20, pos.x+1, pos.x+w-2 ) ) {
-                CCLog("bumped into wall");
-            }
+        //bottom test
+        if( BottomTest(obj) ) {
+            on_obj = obj;
+            break;
         }
+
     }
 
     if(on_obj) {
@@ -296,10 +349,13 @@ void GameWorld::PhysicsStep(float dt)
         }
     }else{
         //player is on the air
-        if( player.state != GPlayer::JMP_DOWN ) {
+        player.EnableGravity(0.0, -0.5);
+        /*
+        if( player.state == GPlayer::RUN ) {
             CCLog("player on the air. set player jump down");
             player.JumpDown();
         }
+        */
     }
 }
 
@@ -316,6 +372,9 @@ void GameWorld::step(float dt)
     RenewMap();
     player.Step(dt);
     PhysicsStep(dt);
+    if( player.GetPlayerPosition().y < 10 ) {
+    	CCDirector::sharedDirector()->popScene();
+    }
 }
 
 

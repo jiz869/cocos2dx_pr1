@@ -52,16 +52,18 @@ protected:
     GPlayer player;
     GTilesLayer mapLayer;
 
-    //map data 
+    //map data
     vector<GObject*> mapObjects;
 
     void InitMap();
     void RenewMap();
     void PhysicsStep(float);
+    bool SideTest(GObject *obj);
+    bool BottomTest(GObject *obj);
 
-    //debug 
+    //debug
     void dump_mapObjects();
 };
 
-#endif  
+#endif
 
