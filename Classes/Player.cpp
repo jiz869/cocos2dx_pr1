@@ -52,7 +52,7 @@ void GPlayer::JumpUp()
         sprite->stopAllActions();
         sprite->setTextureRect( CCRectMake(5*width, 1*height+1, width, height) );
         state = JMP_UP;
-        velocity = ccp(0.0, 9.0);
+        velocity = ccp(0.0, 7.0);
         //gravity = ccp(0.0, -1.0);
     }
 }
@@ -85,6 +85,7 @@ void GPlayer::Step(float dt)
 
     velocity = velocity + gravity;
     if(velocity.y < 0.0) {
+    	CCLog("player's velocity.y < 0.0 position (%f, %f)", pos.x, pos.y);
         JumpDown();
     }
 

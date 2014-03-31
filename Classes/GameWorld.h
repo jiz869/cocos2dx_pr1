@@ -61,6 +61,9 @@ protected:
     bool SideTest(GObject *obj);
     bool BottomTest(GObject *obj);
 
+    //scene switch
+    void GameOver();
+
     //debug
     void dump_mapObjects();
 };

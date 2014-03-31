@@ -1,5 +1,6 @@
 #include <algorithm>
 #include "GameWorld.h"
+#include "GameOverScene.h"
 #include "AnimationScene.h"
 
 using namespace cocos2d;
@@ -135,7 +136,7 @@ void GameWorld::ccTouchesEnded(CCSet* touches, CCEvent* event)
 	CCTouch* touch = (CCTouch*)( touches->anyObject() );
 	CCPoint location = touch->getLocation();
 
-	CCLog("++++++++after  x:%f, y:%f", location.x, location.y);
+	//CCLog("++++++++after  x:%f, y:%f", location.x, location.y);
     CCPoint v = player.GetPlayerVelocity();
     if(v.y > 3  ) {
        player.SetPlayerVelocity(0, 3);
@@ -176,7 +177,7 @@ static bool PointInSprite(CCPoint &p, CCSprite &sprite)
 { \
     gbox =  new GGroundBox(); \
     gbox->Load("stone ground"); \
-    gbox->SetObjectPosition((x),30 - gbox->height + (y_offset)); \
+    gbox->SetObjectPosition((x),50 - gbox->height + (y_offset)); \
     gbox->SetVelocity(ccp(-4, 0)); \
     mapObjects.push_back(gbox); \
     this->addChild(gbox->Node()); \
@@ -238,7 +239,7 @@ void GameWorld::RenewMap()
         if(first_obj->state != OBJ_INACTIVE) {
             CCLog("No invalid object available!");
         }else{
-            first_obj->SetObjectPosition(pos.x+w+x_gap, 100-first_obj->height + y_offset);
+            first_obj->SetObjectPosition(pos.x+w+x_gap, 50-first_obj->height + y_offset);
             first_obj->state = OBJ_ACTIVE;
         }
     }
@@ -330,7 +331,7 @@ void GameWorld::PhysicsStep(float dt)
         //side test
         if( SideTest(obj) ) {
             CCLog("bump into wall");
-            CCDirector::sharedDirector()->popScene();
+            GameOver();
         }
 
         //bottom test
@@ -349,7 +350,7 @@ void GameWorld::PhysicsStep(float dt)
         }
     }else{
         //player is on the air
-        player.EnableGravity(0.0, -0.5);
+        player.EnableGravity(0.0, -0.4);
         /*
         if( player.state == GPlayer::RUN ) {
             CCLog("player on the air. set player jump down");
@@ -373,9 +374,15 @@ void GameWorld::step(float dt)
     player.Step(dt);
     PhysicsStep(dt);
     if( player.GetPlayerPosition().y < 10 ) {
-    	CCDirector::sharedDirector()->popScene();
+        GameOver();
     }
 }
 
+void GameWorld::GameOver()
+{
+    GameOverScene *gameOverScene = GameOverScene::create();
+    gameOverScene->getLayer()->getLabel()->setString("Game Over");
+	CCDirector::sharedDirector()->replaceScene( gameOverScene );
+}
 
 
