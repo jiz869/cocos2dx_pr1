@@ -2,6 +2,7 @@
 
 GPlayer::GPlayer() : width(0), height(0), state(RUN), sprite(0)
 {
+        designSize = CCEGLView::sharedOpenGLView()->getDesignResolutionSize();
 }
 
 GPlayer::~GPlayer()
@@ -45,6 +46,7 @@ void GPlayer::Run()
     state = RUN;
     velocity = ccp(0.0, 0.0);
     gravity = ccp(0.0, 0.0);
+    CCLog("set player state RUN");
 }
 
 void GPlayer::JumpUp()
@@ -53,8 +55,12 @@ void GPlayer::JumpUp()
         sprite->stopAllActions();
         sprite->setTextureRect( CCRectMake(5*width, 1*height+1, width, height) );
         state = (state == JMP1) ? JMP2 : JMP1;
-        velocity = ccp(0.0, 7.0);
-        //gravity = ccp(0.0, -1.0);
+        if( in_upper ) {
+            velocity = ccp(0.0, -7.0);
+        }else{
+            velocity = ccp(0.0, 7.0);
+        }
+        CCLog("set player state JMPx");
     }
 }
 
@@ -65,14 +71,27 @@ void GPlayer::JumpDown()
     sprite->setTextureRect( CCRectMake(6*width, 1*height+1, width, height) );
     if( state == RUN) {
         state = JMP1;
+        CCLog("JumpDown: set player state JMP1");
+    }
+}
+
+void GPlayer::EnableGravity()
+{
+    //determine gravity direction (now it's based on player's position)
+    if( GetPlayerPosition().y <= designSize.height/2 ) {
+        gravity = ccp(0.0, -0.4);
+    }else{
+        gravity = ccp(0.0, 0.4);
     }
 }
 
 void GPlayer::SwitchGravity()
 {
-   gravity = ccp( gravity.x, -gravity.y); 
-   if( gravity.y > 0 ) {
+   gravity = ccp( gravity.x, -gravity.y);
+   if( gravity.y > 0.01 ) {
        sprite->setFlipY(true);
+   }else if(gravity.y < -0.01){
+       sprite->setFlipY(false);
    }
 }
 
@@ -90,16 +109,30 @@ void GPlayer::SetPlayerPosition(float x, float y)
 
 void GPlayer::Step(float dt)
 {
+    CCPoint oldVelocity = velocity;
+    CCPoint oldPosition = GetPlayerPosition();
+
     CCPoint pos = sprite->getPosition();
     pos = pos + velocity;
     sprite->setPosition(pos);
 
     velocity = velocity + gravity;
-    if(velocity.y < 0.0) {
-    	CCLog("player's velocity.y < 0.0 position (%f, %f)", pos.x, pos.y);
-        JumpDown();
-    }else if(velocity.y > 0.0 && state == RUN) {
+
+    if( oldVelocity.y == 0.0 && velocity.y != 0.0 && state == RUN) {
         state = JMP1;
+        CCLog("set player state JMP1");
+    }
+
+    //velocity and gravity have the same direction
+
+    if( (oldPosition.y < designSize.height/2 && pos.y > designSize.height/2) ||
+        (oldPosition.y > designSize.height/2 && pos.y < designSize.height/2) ) {
+        SwitchGravity();
+        JumpDown();
+        CCLog("flip gravity!");
+    }else if(oldVelocity.y * velocity.y <= 0.0 && velocity.y * gravity.y > 0.0) {
+    	CCLog("player's old velocity.y %f new velocity.y %f)", oldVelocity.y, velocity.y);
+        JumpDown();
     }
 
     //CCLog("player step position(%f, %f) velocity(%f, %f) gravity(%f, %f) state %d",

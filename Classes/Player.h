@@ -18,6 +18,7 @@ class GPlayer : public CCObject
     //physics
     CCPoint velocity;
     CCPoint gravity;
+    CCSize designSize;
 
 public:
     enum ePlayerState {
@@ -48,8 +49,9 @@ public:
     void JumpDown();
     void Run();
     void SwitchGravity();
-    void EnableGravity(float x, float y) {
-        gravity = ccp(x, y);
+    void EnableGravity();
+    bool IsGravityDown() {
+        return (gravity.y < 0.0);
     }
     void Step(float);
 
@@ -60,6 +62,7 @@ public:
     ePlayerState state;
 };
 #define on_the_air(s) (s == JMP1 || s == JMP2)
+#define in_upper (sprite->getPosition().y > designSize.height/2)
 
 #endif
 

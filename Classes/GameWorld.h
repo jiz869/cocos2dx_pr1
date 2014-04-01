@@ -53,20 +53,22 @@ protected:
     GTilesLayer mapLayer;
 
     //map data
-    vector<GObject*> mapObjects;
-    vector<GObject*> topObjects;
+    vector<GObject*> bottomObjects;
+    vector<GObject*> upperObjects;
 
     void InitMap();
     void RenewMap();
     void PhysicsStep(float);
     bool SideTest(GObject *obj);
+    bool TopSideTest(GObject *obj);
     bool BottomTest(GObject *obj);
+    bool TopTest(GObject *obj);
 
     //scene switch
     void GameOver();
 
     //debug
-    void dump_mapObjects();
+    void dump_bottomObjects();
 };
 
 #endif
