@@ -54,6 +54,7 @@ protected:
 
     //map data
     vector<GObject*> mapObjects;
+    vector<GObject*> topObjects;
 
     void InitMap();
     void RenewMap();

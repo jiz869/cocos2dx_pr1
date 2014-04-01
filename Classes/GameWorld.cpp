@@ -25,6 +25,10 @@ GameWorld::~GameWorld()
     for(int i=0; i<n; ++i) {
        delete mapObjects[i];
     }
+    unsigned int n = topObjects.size();
+    for(int i=0; i<n; ++i) {
+       delete topObjects[i];
+    }
 }
 
 GameWorld::GameWorld()
@@ -245,12 +249,6 @@ void GameWorld::RenewMap()
     }
 }
 
-#define segment_overlap(l1, r1, l2, r2) \
-    ( (((l1) < (r2)) && ((l1) > (l2))) || \
-      (((r1) < (r2)) && ((r1) > (l2))) || \
-      (((r2) < (r1)) && ((r2) > (l1))) || \
-      (((l2) < (r1)) && ((l2) > (l1))) )
-
 bool GameWorld::SideTest(GObject *obj)
 {
     //collision test of player's right side and object's left side
@@ -309,6 +307,37 @@ bool GameWorld::BottomTest(GObject *obj)
     return false;
 }
 
+bool GameWorld::TopTest(GObject *obj)
+{
+    CCPoint player_pos;
+    float player_w, player_h;
+    player.GetAABB(player_pos, player_w, player_h);
+
+    CCPoint pos;
+    float w, h;
+    obj->GetAABB(pos, w, h);
+
+    CCPoint p1(player_pos.x+player_w-12, player_pos.y+player_h-20);
+    CCPoint p2(player_pos.x+player_w-12, player_pos.y+player_h-4);
+    CCPoint o1(pos.x, pos.y);
+    CCPoint o2(pos.x+w-1, pos.y);
+    if(o1.y > p1.y && o1.y < p2.y) {
+        if(o1.x < p1.x && o2.x > p1.x){
+            return true;
+        }
+    }
+
+    //left bottom sensor segment
+    p1 = ccp(player_pos.x+12, player_pos.y+player_h-20);
+    p2 = ccp(player_pos.x+12, player_pos.y+player_h-4);
+    if(o1.y > p1.y && o1.y < p2.y) {
+        if(o1.x < p1.x && o2.x > p1.x){
+            return true;
+        }
+    }
+
+    return false;
+}
 
 void GameWorld::PhysicsStep(float dt)
 {
@@ -375,6 +404,9 @@ void GameWorld::step(float dt)
     PhysicsStep(dt);
     if( player.GetPlayerPosition().y < 10 ) {
         GameOver();
+    }else if( player.GetPlayerPosition().y > designSize.height/2) {
+        //switch gravity
+        player.SwitchGravity();
     }
 }
 

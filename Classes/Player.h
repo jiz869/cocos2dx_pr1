@@ -22,8 +22,8 @@ class GPlayer : public CCObject
 public:
     enum ePlayerState {
         RUN,
-        JMP_UP,
-        JMP_DOWN
+        JMP1,
+        JMP2,
     };
     GPlayer();
     ~GPlayer();
@@ -47,6 +47,7 @@ public:
     void JumpUp();
     void JumpDown();
     void Run();
+    void SwitchGravity();
     void EnableGravity(float x, float y) {
         gravity = ccp(x, y);
     }
@@ -58,7 +59,7 @@ public:
     //data
     ePlayerState state;
 };
-#define on_the_air(s) (s == JMP_UP || s == JMP_DOWN)
+#define on_the_air(s) (s == JMP1 || s == JMP2)
 
 #endif
 
