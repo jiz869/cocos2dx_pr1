@@ -66,7 +66,7 @@ bool GameOverLayer::init()
 		this->addChild(_label);
 
 		this->runAction( CCSequence::create(
-                                CCDelayTime::create(3),
+                                CCDelayTime::create(1),
                                 CCCallFunc::create(this,
                                 callfunc_selector(GameOverLayer::gameOverDone)),
                                 NULL));

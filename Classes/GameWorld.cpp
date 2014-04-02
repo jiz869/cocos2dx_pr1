@@ -460,7 +460,7 @@ void GameWorld::PhysicsStep(float dt)
 
     if(on_obj) {
         if(player.state != GPlayer::RUN) {
-            //CCLog("intersect at a bottom solid tile. set player run");
+            CCLog("intersect at a bottom solid tile. set player run");
             player.Run();
             player.SetPlayerPosition(player_pos.x, pos.y+h);
         }
@@ -473,7 +473,7 @@ void GameWorld::PhysicsStep(float dt)
 
     } else{
         //player is on the air
-        CCLog("player is on the air. enable gravity");
+        //CCLog("player is on the air. enable gravity");
         player.EnableGravity();
         /*
         if( player.state == GPlayer::RUN ) {

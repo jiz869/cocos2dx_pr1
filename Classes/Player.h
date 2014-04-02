@@ -19,6 +19,7 @@ class GPlayer : public CCObject
     CCPoint velocity;
     CCPoint gravity;
     CCSize designSize;
+    bool applyGravity;
 
 public:
     enum ePlayerState {
@@ -50,6 +51,10 @@ public:
     void Run();
     void SwitchGravity();
     void EnableGravity();
+    void DisableGravity() {
+    	applyGravity = false;
+    }
+    void UpdateGravity();
     bool IsGravityDown() {
         return (gravity.y < 0.0);
     }

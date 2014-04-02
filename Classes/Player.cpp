@@ -1,6 +1,6 @@
 #include "Player.h"
 
-GPlayer::GPlayer() : width(0), height(0), state(RUN), sprite(0)
+GPlayer::GPlayer() : width(0), height(0), state(RUN), sprite(0), applyGravity(false)
 {
         designSize = CCEGLView::sharedOpenGLView()->getDesignResolutionSize();
 }
@@ -46,6 +46,7 @@ void GPlayer::Run()
     state = RUN;
     velocity = ccp(0.0, 0.0);
     gravity = ccp(0.0, 0.0);
+    applyGravity = false;
     CCLog("set player state RUN");
 }
 
@@ -77,11 +78,18 @@ void GPlayer::JumpDown()
 
 void GPlayer::EnableGravity()
 {
+    applyGravity = true;
+}
+
+void GPlayer::UpdateGravity()
+{
     //determine gravity direction (now it's based on player's position)
     if( GetPlayerPosition().y <= designSize.height/2 ) {
         gravity = ccp(0.0, -0.4);
+        sprite->setFlipY(false);
     }else{
         gravity = ccp(0.0, 0.4);
+        sprite->setFlipY(true);
     }
 }
 
@@ -93,6 +101,8 @@ void GPlayer::SwitchGravity()
    }else if(gravity.y < -0.01){
        sprite->setFlipY(false);
    }
+   //important: clear velocity
+   velocity = ccp(0.0, 0.0);
 }
 
 void GPlayer::GetAABB(CCPoint &o, float &w, float &h)
@@ -116,18 +126,22 @@ void GPlayer::Step(float dt)
     pos = pos + velocity;
     sprite->setPosition(pos);
 
-    velocity = velocity + gravity;
+    if(applyGravity)
+    	velocity = velocity + gravity;
 
     if( oldVelocity.y == 0.0 && velocity.y != 0.0 && state == RUN) {
         state = JMP1;
         CCLog("set player state JMP1");
     }
 
+    //check and set gravity
+    UpdateGravity();
+
     //velocity and gravity have the same direction
 
-    if( (oldPosition.y < designSize.height/2 && pos.y > designSize.height/2) ||
-        (oldPosition.y > designSize.height/2 && pos.y < designSize.height/2) ) {
-        SwitchGravity();
+    if( (oldPosition.y <= designSize.height/2 && pos.y > designSize.height/2) ||
+        (oldPosition.y > designSize.height/2 && pos.y <= designSize.height/2) ) {
+        //SwitchGravity();
         JumpDown();
         CCLog("flip gravity!");
     }else if(oldVelocity.y * velocity.y <= 0.0 && velocity.y * gravity.y > 0.0) {
