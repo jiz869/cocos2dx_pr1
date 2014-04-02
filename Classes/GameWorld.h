@@ -55,7 +55,10 @@ protected:
     //map data
     vector<GObject*> bottomObjects;
     vector<GObject*> upperObjects;
+    vector<GObject*> obstacles;
 
+    GObject* CreateObstacle(char *name);
+    GObject* GetObstacle(char *name);
     void InitMap();
     void RenewMap();
     void PhysicsStep(float);

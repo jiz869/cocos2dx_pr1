@@ -20,7 +20,7 @@ GameWorld::~GameWorld()
 	// cpp don't need to call super dealloc
 	// virtual destructor will do this
 
-	//release all bottomObjects
+	//release all map Objects
     unsigned int n = bottomObjects.size();
     for(int i=0; i<n; ++i) {
        delete bottomObjects[i];
@@ -29,6 +29,11 @@ GameWorld::~GameWorld()
     for(int i=0; i<n; ++i) {
        delete upperObjects[i];
     }
+    n = obstacles.size();
+    for(int i=0; i<n; ++i) {
+       delete obstacles[i];
+    }
+
 }
 
 GameWorld::GameWorld()
@@ -179,6 +184,31 @@ static bool PointInSprite(CCPoint &p, CCSprite &sprite)
     return false;
 }
 
+GObject* GameWorld::CreateObstacle(char *name)
+{
+    GGroundBox *gbox;
+    gbox =  new GGroundBox();
+    gbox->Load(name);
+    obstacles.push_back(gbox);
+    this->addChild(gbox->Node());
+    return gbox;
+}
+
+GObject* GameWorld::GetObstacle(char *name)
+{
+    if(obstacles.size() > 0) {
+        for(int i=0; i < obstacles.size(); ++i) {
+            if(obstacles[i]->state == OBJ_INACTIVE) {
+            	obstacles[i]->state = OBJ_ACTIVE;
+                return obstacles[i];
+            }
+        }
+    }
+
+    //need to create a new obstacle object
+    return CreateObstacle(name);
+}
+
 #define AddStoneGround(x, y_offset) \
 { \
     gbox =  new GGroundBox(); \
@@ -192,7 +222,7 @@ static bool PointInSprite(CCPoint &p, CCSprite &sprite)
 #define AddUpperBox(x) \
 { \
     upBox =  new GGroundBox(); \
-    upBox->Load("stone ground"); \
+    upBox->Load("grass rock"); \
     upBox->SetObjectPosition((x), designSize.height-40 ); \
     upBox->SetVelocity(ccp(-4, 0)); \
     upperObjects.push_back(upBox); \
@@ -248,6 +278,8 @@ void GameWorld::RenewMap()
     //sort it based on right most x cooridinate
     sort( bottomObjects.begin(), bottomObjects.end(), CompareX2 );
     sort( upperObjects.begin(), upperObjects.end(), CompareX2 );
+    if( obstacles.size() > 0)
+        sort( obstacles.begin(), obstacles.end(), CompareX2 );
 
     GObject *last_obj = bottomObjects.back();
     GObject *first_obj = bottomObjects.front();
@@ -267,6 +299,17 @@ void GameWorld::RenewMap()
         }else{
             first_obj->SetObjectPosition(pos.x+w+x_gap, 50-first_obj->height + y_offset);
             first_obj->state = OBJ_ACTIVE;
+
+            //add a tree
+            if( x_gap < 200) {
+                GObject *tree = GetObstacle("tree");
+                float groundX = pos.x+w+x_gap;
+                float groundY = 50+y_offset;
+                tree->SetObjectPosition( groundX+20, groundY );
+                GGroundBox *gbox = (GGroundBox*)tree;
+                gbox->SetVelocity(ccp(-4, 0));
+                CCLog("Add a tree");
+            }
         }
     }
 
@@ -419,6 +462,7 @@ void GameWorld::PhysicsStep(float dt)
     GObject *on_obj=0;
     CCPoint pos;
     float w, h;
+    float up_w, up_h;
     for(int i=0; i<n; ++i) {
         GObject *obj = bottomObjects[i];
         obj->GetAABB(pos, w, h);
@@ -443,7 +487,7 @@ void GameWorld::PhysicsStep(float dt)
     n = upperObjects.size();
     for(int i=0; i<n; ++i) {
         GObject *obj = upperObjects[i];
-        obj->GetAABB(upPos, w, h);
+        obj->GetAABB(upPos, up_w, up_h);
 
         //side test
         if( TopSideTest(obj) ) {
@@ -498,6 +542,12 @@ void GameWorld::step(float dt)
     n = upperObjects.size();
     for(int i=0; i<n; ++i) {
         GObject *obj = upperObjects[i];
+        obj->Step(dt);
+    }
+
+    n = obstacles.size();
+    for(int i=0; i<n; ++i) {
+        GObject *obj = obstacles[i];
         obj->Step(dt);
     }
 

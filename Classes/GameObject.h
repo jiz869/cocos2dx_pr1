@@ -39,6 +39,7 @@ public:
     ObjectState state;
     float width;
     float height;
+    char objName[50];
 };
 
 

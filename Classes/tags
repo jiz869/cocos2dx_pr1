@@ -4,55 +4,119 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
+AddStoneGround	GameWorld.cpp	182;"	d	file:
+AddUpperBox	GameWorld.cpp	192;"	d	file:
 AnimationScene	AnimationScene.cpp	/^AnimationScene::AnimationScene()$/;"	f	class:AnimationScene
 AnimationScene	AnimationScene.h	/^class AnimationScene : public cocos2d::CCLayerColor$/;"	c
 AppDelegate	AppDelegate.cpp	/^AppDelegate::AppDelegate() {$/;"	f	class:AppDelegate
 AppDelegate	AppDelegate.h	/^class  AppDelegate : private cocos2d::CCApplication$/;"	c
 BAT_FLYING_UP	AnimationScene.h	/^	BAT_FLYING_UP = 0,$/;"	e	enum:__anon2
 BAT_GLIDING_DOWN	AnimationScene.h	/^	BAT_GLIDING_DOWN = 1$/;"	e	enum:__anon2
+BatchNode	TilesLayer.h	/^    inline CCNode* BatchNode() {$/;"	f	class:GTilesLayer
+BottomTest	GameWorld.cpp	/^bool GameWorld::BottomTest(GObject *obj)$/;"	f	class:GameWorld
+CompareX2	GameWorld.cpp	/^static bool CompareX2(GObject* a, GObject* b)$/;"	f	file:
 CreatePlayerSprite	Player.cpp	/^CCSprite* GPlayer::CreatePlayerSprite()$/;"	f	class:GPlayer
-GPlayer	Player.cpp	/^GPlayer::GPlayer() : width(0), height(0), state(RUN), sprite(0)$/;"	f	class:GPlayer
+DisableGravity	Player.h	/^    void DisableGravity() {$/;"	f	class:GPlayer
+EnableGravity	Player.cpp	/^void GPlayer::EnableGravity()$/;"	f	class:GPlayer
+GBox	Box.cpp	/^GBox::GBox() : batchNode(0), texture(0)$/;"	f	class:GBox
+GBox	Box.h	/^class GBox : public GObject {$/;"	c
+GFXVEC2_INCLUDED	vec2.h	2;"	d
+GGroundBox	GroundBox.cpp	/^GGroundBox::GGroundBox()$/;"	f	class:GGroundBox
+GGroundBox	GroundBox.h	/^class GGroundBox : public GBox {$/;"	c
+GObject	GameObject.h	/^    GObject() : state(OBJ_INVALID) {$/;"	f	class:GObject
+GObject	GameObject.h	/^class GObject : public CCNode {$/;"	c
+GPlayer	Player.cpp	/^GPlayer::GPlayer() : width(0), height(0), state(RUN), sprite(0), applyGravity(false)$/;"	f	class:GPlayer
 GPlayer	Player.h	/^class GPlayer : public CCObject$/;"	c
+GTilesLayer	TilesLayer.cpp	/^GTilesLayer::GTilesLayer() : velocity(-3.0, 0.0), batchNode(0), texture(0)$/;"	f	class:GTilesLayer
+GTilesLayer	TilesLayer.h	/^class GTilesLayer : public CCNode {$/;"	c
+GameOver	GameWorld.cpp	/^void GameWorld::GameOver()$/;"	f	class:GameWorld
 GameOverLayer	GameOverScene.h	/^    GameOverLayer():_label(NULL) {};$/;"	f	class:GameOverLayer
 GameOverLayer	GameOverScene.h	/^class GameOverLayer : public cocos2d::CCLayerColor$/;"	c
 GameOverScene	GameOverScene.h	/^    GameOverScene():_layer(NULL) {};$/;"	f	class:GameOverScene
 GameOverScene	GameOverScene.h	/^class GameOverScene : public cocos2d::CCScene$/;"	c
 GameWorld	GameWorld.cpp	/^GameWorld::GameWorld()$/;"	f	class:GameWorld
 GameWorld	GameWorld.h	/^class GameWorld : public cocos2d::CCLayerColor$/;"	c
+GetAABB	Box.cpp	/^void GBox::GetAABB(CCPoint &o, float &w, float &h)$/;"	f	class:GBox
+GetAABB	GameObject.h	/^    virtual void GetAABB(CCPoint &o, float &w, float &h) {$/;"	f	class:GObject
+GetAABB	Player.cpp	/^void GPlayer::GetAABB(CCPoint &o, float &w, float &h)$/;"	f	class:GPlayer
+GetPlayerPosition	Player.h	/^    CCPoint GetPlayerPosition() {$/;"	f	class:GPlayer
+GetPlayerVelocity	Player.h	/^    CCPoint GetPlayerVelocity() {$/;"	f	class:GPlayer
 HelloWorld	HelloWorldScene.cpp	/^HelloWorld::HelloWorld()$/;"	f	class:HelloWorld
 HelloWorld	HelloWorldScene.h	/^class HelloWorld : public cocos2d::CCLayerColor$/;"	c
+InitMap	GameWorld.cpp	/^void GameWorld::InitMap()$/;"	f	class:GameWorld
 InputScene	InputScene.cpp	/^InputScene::InputScene() : _touchSprite(0), _spriteTS(TS_NONE)$/;"	f	class:InputScene
 InputScene	InputScene.h	/^class InputScene : public cocos2d::CCLayerColor$/;"	c
-JMP_DOWN	Player.h	/^        JMP_DOWN$/;"	e	enum:GPlayer::ePlayerState
-JMP_UP	Player.h	/^        JMP_UP,$/;"	e	enum:GPlayer::ePlayerState
+InterSectionResult	GameWorld.h	/^struct InterSectionResult{$/;"	s
+IsGravityDown	Player.h	/^    bool IsGravityDown() {$/;"	f	class:GPlayer
+JMP1	Player.h	/^        JMP1,$/;"	e	enum:GPlayer::ePlayerState
+JMP2	Player.h	/^        JMP2,$/;"	e	enum:GPlayer::ePlayerState
 JumpDown	Player.cpp	/^void GPlayer::JumpDown()$/;"	f	class:GPlayer
-JumpDownDone	Player.cpp	/^void GPlayer::JumpDownDone()$/;"	f	class:GPlayer
 JumpUp	Player.cpp	/^void GPlayer::JumpUp()$/;"	f	class:GPlayer
-JumpUpDone	Player.cpp	/^void GPlayer::JumpUpDone()$/;"	f	class:GPlayer
+Load	Box.h	/^    virtual void Load(char *name) {$/;"	f	class:GBox
+Load	GameObject.h	/^    virtual void Load(char *name) {$/;"	f	class:GObject
+Load	GroundBox.cpp	/^void GGroundBox::Load(char *name)$/;"	f	class:GGroundBox
+LoadMap	TilesLayer.cpp	/^void GTilesLayer::LoadMap()$/;"	f	class:GTilesLayer
+LoadStoneGround	GroundBox.cpp	/^void GGroundBox::LoadStoneGround()$/;"	f	class:GGroundBox
+Node	Box.h	/^    virtual CCNode* Node() {$/;"	f	class:GBox
+Node	GameObject.h	/^    virtual CCNode* Node() {$/;"	f	class:GObject
+OBJ_ACTIVE	GameObject.h	/^    OBJ_ACTIVE,$/;"	e	enum:__anon3
+OBJ_INACTIVE	GameObject.h	/^    OBJ_INACTIVE$/;"	e	enum:__anon3
+OBJ_INVALID	GameObject.h	/^    OBJ_INVALID,$/;"	e	enum:__anon3
+OBJ_LOADED	GameObject.h	/^    OBJ_LOADED,$/;"	e	enum:__anon3
+ObjectState	GameObject.h	/^}ObjectState;$/;"	t	typeref:enum:__anon3
+PhysicsStep	GameWorld.cpp	/^void GameWorld::PhysicsStep(float dt)$/;"	f	class:GameWorld
 PointInSprite	GameWorld.cpp	/^static bool PointInSprite(CCPoint &p, CCSprite &sprite)$/;"	f	file:
 PointInSprite	InputScene.cpp	/^static bool PointInSprite(CCPoint &p, CCSprite &sprite)$/;"	f	file:
 RUN	Player.h	/^        RUN,$/;"	e	enum:GPlayer::ePlayerState
+RenewMap	GameWorld.cpp	/^void GameWorld::RenewMap()$/;"	f	class:GameWorld
 Run	Player.cpp	/^void GPlayer::Run()$/;"	f	class:GPlayer
+SetObjectPosition	Box.h	/^    virtual void SetObjectPosition(float x, float y) {$/;"	f	class:GBox
+SetObjectPosition	GameObject.h	/^    virtual void SetObjectPosition(float x, float y) {$/;"	f	class:GObject
+SetObjectPosition	GroundBox.cpp	/^void GGroundBox::SetObjectPosition(float x, float y)$/;"	f	class:GGroundBox
+SetPlayerPosition	Player.cpp	/^void GPlayer::SetPlayerPosition(float x, float y)$/;"	f	class:GPlayer
+SetPlayerVelocity	Player.h	/^    void SetPlayerVelocity(float x, float y) {$/;"	f	class:GPlayer
+SetVelocity	Box.h	/^    virtual void SetVelocity( CCPoint v) {$/;"	f	class:GBox
+SetVelocity	TilesLayer.cpp	/^void GTilesLayer::SetVelocity(CCPoint v)$/;"	f	class:GTilesLayer
+SideTest	GameWorld.cpp	/^bool GameWorld::SideTest(GObject *obj)$/;"	f	class:GameWorld
 SimpleAnimObject	AnimationScene.h	/^class SimpleAnimObject : public CCSprite {$/;"	c
-TAG_ALICE_SPRITE	HelloWorldScene.h	/^	TAG_ALICE_SPRITE = 0,$/;"	e	enum:__anon3
+Step	Box.h	/^    virtual void Step(float dt) {$/;"	f	class:GBox
+Step	GameObject.h	/^    virtual void Step(float dt) {$/;"	f	class:GObject
+Step	GroundBox.cpp	/^void GGroundBox::Step(float dt)$/;"	f	class:GGroundBox
+Step	Player.cpp	/^void GPlayer::Step(float dt)$/;"	f	class:GPlayer
+Step	TilesLayer.cpp	/^void GTilesLayer::Step(float dt)$/;"	f	class:GTilesLayer
+SwitchGravity	Player.cpp	/^void GPlayer::SwitchGravity()$/;"	f	class:GPlayer
+TAG_ALICE_SPRITE	HelloWorldScene.h	/^	TAG_ALICE_SPRITE = 0,$/;"	e	enum:__anon4
 TAG_BATS	AnimationScene.h	/^	TAG_BATS = 2$/;"	e	enum:__anon1
 TAG_CASTLE	AnimationScene.h	/^	TAG_CASTLE = 0,$/;"	e	enum:__anon1
-TAG_CAT_SPRITE	HelloWorldScene.h	/^	TAG_CAT_SPRITE = 1,$/;"	e	enum:__anon3
-TAG_CLOUD_BATCH	HelloWorldScene.h	/^	TAG_CLOUD_BATCH = 5,$/;"	e	enum:__anon3
-TAG_GRASS_BATCH_1	HelloWorldScene.h	/^	TAG_GRASS_BATCH_1 = 6,$/;"	e	enum:__anon3
-TAG_GRASS_BATCH_2	HelloWorldScene.h	/^	TAG_GRASS_BATCH_2 = 7$/;"	e	enum:__anon3
+TAG_CAT_SPRITE	HelloWorldScene.h	/^	TAG_CAT_SPRITE = 1,$/;"	e	enum:__anon4
+TAG_CLOUD_BATCH	HelloWorldScene.h	/^	TAG_CLOUD_BATCH = 5,$/;"	e	enum:__anon4
+TAG_GRASS_BATCH_1	HelloWorldScene.h	/^	TAG_GRASS_BATCH_1 = 6,$/;"	e	enum:__anon4
+TAG_GRASS_BATCH_2	HelloWorldScene.h	/^	TAG_GRASS_BATCH_2 = 7$/;"	e	enum:__anon4
 TAG_LIGHTNING_BOLT	AnimationScene.h	/^	TAG_LIGHTNING_BOLT = 1,$/;"	e	enum:__anon1
-TAG_TREE_SPRITE_1	HelloWorldScene.h	/^	TAG_TREE_SPRITE_1 = 2,$/;"	e	enum:__anon3
-TAG_TREE_SPRITE_2	HelloWorldScene.h	/^	TAG_TREE_SPRITE_2 = 3,$/;"	e	enum:__anon3
-TAG_TREE_SPRITE_3	HelloWorldScene.h	/^	TAG_TREE_SPRITE_3 = 4,$/;"	e	enum:__anon3
+TAG_TREE_SPRITE_1	HelloWorldScene.h	/^	TAG_TREE_SPRITE_1 = 2,$/;"	e	enum:__anon4
+TAG_TREE_SPRITE_2	HelloWorldScene.h	/^	TAG_TREE_SPRITE_2 = 3,$/;"	e	enum:__anon4
+TAG_TREE_SPRITE_3	HelloWorldScene.h	/^	TAG_TREE_SPRITE_3 = 4,$/;"	e	enum:__anon4
 TS_NONE	GameWorld.h	/^        TS_NONE,$/;"	e	enum:GameWorld::tTouchState
 TS_NONE	InputScene.h	/^        TS_NONE,$/;"	e	enum:InputScene::tTouchState
 TS_TOUCHED	GameWorld.h	/^        TS_TOUCHED$/;"	e	enum:GameWorld::tTouchState
 TS_TOUCHED	InputScene.h	/^        TS_TOUCHED$/;"	e	enum:InputScene::tTouchState
+TVec2	vec2.h	/^    TVec2(T s=0) { *this = s; }$/;"	f	class:TVec2
+TVec2	vec2.h	/^    TVec2(T x, T y) { elt[0]=x; elt[1]=y; }$/;"	f	class:TVec2
+TVec2	vec2.h	/^    template<class U> TVec2(const TVec2<U>& v) { *this = v; }$/;"	f	class:TVec2
+TVec2	vec2.h	/^    template<class U> TVec2(const U v[2]) { elt[0]=v[0]; elt[1]=v[1]; }$/;"	f	class:TVec2
+TVec2	vec2.h	/^class TVec2 {$/;"	c
+TopSideTest	GameWorld.cpp	/^bool GameWorld::TopSideTest(GObject *obj)$/;"	f	class:GameWorld
+TopTest	GameWorld.cpp	/^bool GameWorld::TopTest(GObject *obj)$/;"	f	class:GameWorld
+UpdateGravity	Player.cpp	/^void GPlayer::UpdateGravity()$/;"	f	class:GPlayer
+VEC2D	vec2.h	/^typedef TVec2<double> VEC2D;$/;"	t
+VEC2F	vec2.h	/^typedef TVec2<float>  VEC2F;$/;"	t
 _APP_DELEGATE_H_	AppDelegate.h	2;"	d
+_BOX_H	Box.h	2;"	d
+_GAME_OBJECT_H_	GameObject.h	2;"	d
 _GAME_OVER_SCENE_H_	GameOverScene.h	27;"	d
+_GROUND_BOX_H	GroundBox.h	2;"	d
 _PLAYER_H_	Player.h	2;"	d
-_TILES_H_	Tiles.h	2;"	d
+_TILES_H_	TilesLayer.h	2;"	d
 __ANIMATION_SCENE_H__	AnimationScene.h	2;"	d
 __GameWorld_H__	GameWorld.h	2;"	d
 __HELLOWORLD_SCENE_H__	HelloWorldScene.h	2;"	d
@@ -66,9 +130,13 @@ animationType	AnimationScene.h	/^        int animationType;$/;"	m	class:SimpleAn
 applicationDidEnterBackground	AppDelegate.cpp	/^void AppDelegate::applicationDidEnterBackground() {$/;"	f	class:AppDelegate
 applicationDidFinishLaunching	AppDelegate.cpp	/^bool AppDelegate::applicationDidFinishLaunching() {$/;"	f	class:AppDelegate
 applicationWillEnterForeground	AppDelegate.cpp	/^void AppDelegate::applicationWillEnterForeground() {$/;"	f	class:AppDelegate
+applyGravity	Player.h	/^    bool applyGravity;$/;"	m	class:GPlayer
 batFlyUp	AnimationScene.h	/^    CCAnimation *batFlyUp;$/;"	m	class:AnimationScene
 batGlideDown	AnimationScene.h	/^    CCAnimation *batGlideDown;$/;"	m	class:AnimationScene
+batchNode	Box.h	/^    CCSpriteBatchNode *batchNode;$/;"	m	class:GBox
+batchNode	TilesLayer.h	/^    CCSpriteBatchNode *batchNode;$/;"	m	class:GTilesLayer
 bats	AnimationScene.h	/^    SimpleAnimObject *bats[20];$/;"	m	class:AnimationScene
+bottomObjects	GameWorld.h	/^    vector<GObject*> bottomObjects;$/;"	m	class:GameWorld
 ccTouchesBegan	GameWorld.cpp	/^void GameWorld::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event)$/;"	f	class:GameWorld
 ccTouchesBegan	InputScene.cpp	/^void InputScene::ccTouchesBegan(cocos2d::CCSet* touches, cocos2d::CCEvent* event)$/;"	f	class:InputScene
 ccTouchesEnded	AnimationScene.cpp	/^void AnimationScene::ccTouchesEnded(CCSet* touches, CCEvent* event)$/;"	f	class:AnimationScene
@@ -77,46 +145,95 @@ ccTouchesEnded	HelloWorldScene.cpp	/^void HelloWorld::ccTouchesEnded(CCSet* touc
 ccTouchesEnded	InputScene.cpp	/^void InputScene::ccTouchesEnded(CCSet* touches, CCEvent* event)$/;"	f	class:InputScene
 ccTouchesMoved	GameWorld.cpp	/^void GameWorld::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event)$/;"	f	class:GameWorld
 ccTouchesMoved	InputScene.cpp	/^void InputScene::ccTouchesMoved(cocos2d::CCSet* touches, cocos2d::CCEvent* event)$/;"	f	class:InputScene
+designSize	GameWorld.h	/^    CCSize designSize;$/;"	m	class:GameWorld
+designSize	Player.h	/^    CCSize designSize;$/;"	m	class:GPlayer
+dim	vec2.h	/^    static int dim() { return 2; }$/;"	f	class:TVec2
+dump_bottomObjects	GameWorld.cpp	/^void GameWorld::dump_bottomObjects()$/;"	f	class:GameWorld
 ePlayerState	Player.h	/^    enum ePlayerState {$/;"	g	class:GPlayer
+elt	vec2.h	/^    T elt[2];$/;"	m	class:TVec2
 gameOverDone	GameOverScene.cpp	/^void GameOverLayer::gameOverDone()$/;"	f	class:GameOverLayer
 getRandom	AnimationScene.cpp	/^static int getRandom(int low, int high)$/;"	f	file:
+getRandom	GameWorld.cpp	/^static int getRandom(int low, int high)$/;"	f	file:
 getRandom	HelloWorldScene.cpp	/^static int getRandom(int low, int high)$/;"	f	file:
+gravity	Player.h	/^    CCPoint gravity;$/;"	m	class:GPlayer
+height	GameObject.h	/^    float height;$/;"	m	class:GObject
 height	Player.h	/^    float height;$/;"	m	class:GPlayer
+in_upper	Player.h	70;"	d
 init	AnimationScene.cpp	/^bool AnimationScene::init()$/;"	f	class:AnimationScene
 init	GameOverScene.cpp	/^bool GameOverLayer::init()$/;"	f	class:GameOverLayer
 init	GameOverScene.cpp	/^bool GameOverScene::init()$/;"	f	class:GameOverScene
 init	GameWorld.cpp	/^bool GameWorld::init()$/;"	f	class:GameWorld
 init	HelloWorldScene.cpp	/^bool HelloWorld::init()$/;"	f	class:HelloWorld
 init	InputScene.cpp	/^bool InputScene::init()$/;"	f	class:InputScene
+intersect	GameWorld.h	/^    bool intersect;$/;"	m	struct:InterSectionResult
 lightningBolt	AnimationScene.h	/^    CCSprite *lightningBolt;$/;"	m	class:AnimationScene
 lightningGlow	AnimationScene.h	/^    CCSprite *lightningGlow;$/;"	m	class:AnimationScene
 lightningRemoveCount	AnimationScene.h	/^    int lightningRemoveCount;$/;"	m	class:AnimationScene
 makeBatFlyUp	AnimationScene.cpp	/^float AnimationScene::makeBatFlyUp( SimpleAnimObject *bat )$/;"	f	class:AnimationScene
 makeBatGlideDown	AnimationScene.cpp	/^void AnimationScene::makeBatGlideDown( SimpleAnimObject* bat )$/;"	f	class:AnimationScene
+mapLayer	GameWorld.h	/^    GTilesLayer mapLayer;$/;"	m	class:GameWorld
 menuCloseCallback	AnimationScene.cpp	/^void AnimationScene::menuCloseCallback(CCObject* pSender)$/;"	f	class:AnimationScene
 menuCloseCallback	GameWorld.cpp	/^void GameWorld::menuCloseCallback(CCObject* pSender)$/;"	f	class:GameWorld
 menuCloseCallback	HelloWorldScene.cpp	/^void HelloWorld::menuCloseCallback(CCObject* pSender)$/;"	f	class:HelloWorld
 menuCloseCallback	InputScene.cpp	/^void InputScene::menuCloseCallback(CCObject* pSender)$/;"	f	class:InputScene
+norm	vec2.h	/^template<class T> inline T norm(const TVec2<T>& v)   { return sqrt(norm2(v)); }$/;"	f
+norm2	vec2.h	/^template<class T> inline T norm2(const TVec2<T>& v)  { return v*v; }$/;"	f
+on_the_air	Player.h	69;"	d
+operator *	vec2.h	/^  template<class T, class N> inline TVec2<T> operator*(N s, const TVec2<T> &v)$/;"	f
+operator *	vec2.h	/^  template<class T, class N> inline TVec2<T> operator*(const TVec2<T> &v, N s)$/;"	f
+operator *	vec2.h	/^template<class T> inline T operator*(const TVec2<T> &u, const TVec2<T>& v)$/;"	f
+operator *=	vec2.h	/^template<class T> inline TVec2<T>& TVec2<T>::operator*=(T s)$/;"	f	class:TVec2
+operator +	vec2.h	/^inline TVec2<T> operator+(const TVec2<T> &u, const TVec2<T> &v)$/;"	f
+operator +=	vec2.h	/^template<class T> inline TVec2<T>& TVec2<T>::operator+=(const TVec2<T>& v)$/;"	f	class:TVec2
+operator -	vec2.h	/^inline TVec2<T> operator-(const TVec2<T> &u, const TVec2<T> &v)$/;"	f
+operator -	vec2.h	/^template<class T> inline TVec2<T> operator-(const TVec2<T> &v)$/;"	f
+operator -=	vec2.h	/^template<class T> inline TVec2<T>& TVec2<T>::operator-=(const TVec2<T>& v)$/;"	f	class:TVec2
+operator /	vec2.h	/^  template<class T, class N> inline TVec2<T> operator\/(const TVec2<T> &v, N s)$/;"	f
+operator /=	vec2.h	/^template<class T> inline TVec2<T>& TVec2<T>::operator\/=(T s)$/;"	f	class:TVec2
+operator =	vec2.h	/^    TVec2& operator=(T s) { elt[0]=elt[1]=s; return *this; }$/;"	f	class:TVec2
+operator =	vec2.h	/^    template<class U> TVec2& operator=(const TVec2<U>& v)$/;"	f	class:TVec2
+operator T*	vec2.h	/^    operator       T*()       { return elt; }$/;"	f	class:TVec2
+operator []	vec2.h	/^    T  operator[](int i) const { return elt[i]; }$/;"	f	class:TVec2
+operator []	vec2.h	/^    T& operator[](int i)       { return elt[i]; }$/;"	f	class:TVec2
+operator const T*	vec2.h	/^    operator const T*()       { return elt; }$/;"	f	class:TVec2
+operator const T*	vec2.h	/^    operator const T*() const { return elt; }$/;"	f	class:TVec2
+perp	vec2.h	/^template<class T> inline TVec2<T> perp(const TVec2<T> &v)$/;"	f
 player	GameWorld.h	/^    GPlayer player;$/;"	m	class:GameWorld
 playerTexture	Player.h	/^    CCTexture2D *playerTexture;$/;"	m	class:GPlayer
 rect	AnimationScene.h	/^        CCRect rect() {$/;"	f	class:SimpleAnimObject
 registerWithTouchDispatcher	HelloWorldScene.cpp	/^void HelloWorld::registerWithTouchDispatcher()$/;"	f	class:HelloWorld
+rightMostPosition	TilesLayer.h	/^    CCPoint rightMostPosition;$/;"	m	class:GTilesLayer
 scene	AnimationScene.cpp	/^CCScene* AnimationScene::scene()$/;"	f	class:AnimationScene
 scene	GameWorld.cpp	/^CCScene* GameWorld::scene()$/;"	f	class:GameWorld
 scene	HelloWorldScene.cpp	/^CCScene* HelloWorld::scene()$/;"	f	class:HelloWorld
 scene	InputScene.cpp	/^CCScene* InputScene::scene()$/;"	f	class:InputScene
 sprite	AnimationScene.h	/^        CCSprite *sprite;$/;"	m	class:SimpleAnimObject
 sprite	Player.h	/^    CCSprite *sprite;$/;"	m	class:GPlayer
+state	GameObject.h	/^    ObjectState state;$/;"	m	class:GObject
 state	Player.h	/^    ePlayerState state;$/;"	m	class:GPlayer
 step	AnimationScene.cpp	/^void AnimationScene::step( float delta )$/;"	f	class:AnimationScene
+step	GameWorld.cpp	/^void GameWorld::step(float dt)$/;"	f	class:GameWorld
 tTouchState	GameWorld.h	/^    enum tTouchState{$/;"	g	class:GameWorld
 tTouchState	InputScene.h	/^    enum tTouchState{$/;"	g	class:InputScene
+texture	Box.h	/^    CCTexture2D *texture;$/;"	m	class:GBox
+texture	TilesLayer.h	/^    CCTexture2D *texture;$/;"	m	class:GTilesLayer
+unitize	vec2.h	/^template<class T> inline void unitize(TVec2<T>& v)$/;"	f
 update	AnimationScene.h	/^        virtual void update( float time ) {$/;"	f	class:SimpleAnimObject
+upperObjects	GameWorld.h	/^    vector<GObject*> upperObjects;$/;"	m	class:GameWorld
+value_type	vec2.h	/^    typedef T value_type;$/;"	t	class:TVec2
 velocity	AnimationScene.h	/^        CCPoint velocity;$/;"	m	class:SimpleAnimObject
+velocity	Box.h	/^    CCPoint velocity;$/;"	m	class:GBox
+velocity	Player.h	/^    CCPoint velocity;$/;"	m	class:GPlayer
+velocity	TilesLayer.h	/^    CCPoint velocity;$/;"	m	class:GTilesLayer
+width	GameObject.h	/^    float width;$/;"	m	class:GObject
 width	Player.h	/^    float width;    \/\/ width of single frame in sprite sheet$/;"	m	class:GPlayer
 ~AnimationScene	AnimationScene.cpp	/^AnimationScene::~AnimationScene()$/;"	f	class:AnimationScene
 ~AppDelegate	AppDelegate.cpp	/^AppDelegate::~AppDelegate()$/;"	f	class:AppDelegate
+~GBox	Box.cpp	/^GBox::~GBox()$/;"	f	class:GBox
+~GGroundBox	GroundBox.cpp	/^GGroundBox::~GGroundBox()$/;"	f	class:GGroundBox
+~GObject	GameObject.h	/^    virtual ~GObject(){$/;"	f	class:GObject
 ~GPlayer	Player.cpp	/^GPlayer::~GPlayer()$/;"	f	class:GPlayer
+~GTilesLayer	TilesLayer.cpp	/^GTilesLayer::~GTilesLayer()$/;"	f	class:GTilesLayer
 ~GameOverLayer	GameOverScene.cpp	/^GameOverLayer::~GameOverLayer()$/;"	f	class:GameOverLayer
 ~GameOverScene	GameOverScene.cpp	/^GameOverScene::~GameOverScene()$/;"	f	class:GameOverScene
 ~GameWorld	GameWorld.cpp	/^GameWorld::~GameWorld()$/;"	f	class:GameWorld
