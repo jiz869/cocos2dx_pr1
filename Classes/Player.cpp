@@ -95,12 +95,6 @@ void GPlayer::UpdateGravity()
 
 void GPlayer::SwitchGravity()
 {
-   gravity = ccp( gravity.x, -gravity.y);
-   if( gravity.y > 0.01 ) {
-       sprite->setFlipY(true);
-   }else if(gravity.y < -0.01){
-       sprite->setFlipY(false);
-   }
    //important: clear velocity
    velocity = ccp(0.0, 0.0);
 }
@@ -141,7 +135,7 @@ void GPlayer::Step(float dt)
 
     if( (oldPosition.y <= designSize.height/2 && pos.y > designSize.height/2) ||
         (oldPosition.y > designSize.height/2 && pos.y <= designSize.height/2) ) {
-        //SwitchGravity();
+        SwitchGravity();
         JumpDown();
         CCLog("flip gravity!");
     }else if(oldVelocity.y * velocity.y <= 0.0 && velocity.y * gravity.y > 0.0) {
