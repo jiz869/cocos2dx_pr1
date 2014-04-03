@@ -31,7 +31,7 @@ void GGroundBox::LoadTiles(int nc, int nr, float w, float h,
         for(int c=0; c<nc; ++c) {
             CCPoint xy = tile_xy[nc*r+c];
             CCSprite *tile = CCSprite::createWithTexture( texture, CCRectMake(xy.x, xy.y, w, h) );
-            tile->setOpacity(100);
+            tile->setOpacity(160);
             tile->setAnchorPoint(ccp(0.0, 0.0));
             //relative position to batchNode
             tile->setPosition(ccp(c*w, r*h));

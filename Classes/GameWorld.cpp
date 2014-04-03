@@ -73,13 +73,18 @@ bool GameWorld::init()
 		//////////////////////////////////////////////////////////////////////////
 
 		CC_BREAK_IF(! CCLayerColor::initWithColor( ccc4(255,255,255,255) ) );
+		designSize = CCEGLView::sharedOpenGLView()->getDesignResolutionSize();
 
-		//////////////////////////////////////////////////////////////////////////
-		// add your codes below...
-		//////////////////////////////////////////////////////////////////////////
+        //add background first
+        CCSprite *bg = CCSprite::create("meadow.jpg");
+        //bg->setPosition(ccp(designSize.width/2, designSize.height/2));
+        //float xscale = designSize.width / bg->getContentSize().width;
+        //float yscale = designSize.height / bg->getContentSize().height;
+        //bg->setScaleX(xscale);
+        //bg->setScaleY(yscale);
+        this->addChild( bg, -0.1 );
 
-		// 1. Add a menu item with "X" image, which is clicked to quit the program.
-
+		//Add a menu item with "X" image, which is clicked to quit the program.
 		// Create a "close" menu item with close icon, it's an auto release object.
 		CCMenuItemImage *pCloseItem = CCMenuItemImage::create(
 			"CloseNormal.png",
@@ -92,8 +97,6 @@ bool GameWorld::init()
         CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
         CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
-        designSize = CCEGLView::sharedOpenGLView()->getDesignResolutionSize();
-
 		pCloseItem->setPosition(ccp(origin.x + visibleSize.width - pCloseItem->getContentSize().width/2,
                                     origin.y + pCloseItem->getContentSize().height/2));
 
@@ -103,21 +106,17 @@ bool GameWorld::init()
 		CC_BREAK_IF(! pMenu);
 
 		// Add the menu to GameWorld layer as a child layer.
-		this->addChild(pMenu, 0.1);
+		this->addChild(pMenu, 2);
 
-		///////////////////////////////////////////////
-		// 2. add your codes below...
-        ///////////////////////////////////////////////
 		this->setTouchEnabled(true);
         this->schedule( schedule_selector(GameWorld::step) );
 
-        this->addChild( player.CreatePlayerSprite() );
+        //add player
+        this->addChild( player.CreatePlayerSprite(), 0.1 );
         player.SetPlayerPosition(80, 100);
         player.Run();
 
-        //mapLayer.LoadMap();
-        //this->addChild( mapLayer.BatchNode());
-
+        //add map
         InitMap();
 
         bRet = true;
