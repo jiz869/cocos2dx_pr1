@@ -117,6 +117,7 @@ bool GameWorld::init()
         player.Run();
 
         //add map
+        speed = 3;
         InitMap();
 
         bRet = true;
@@ -213,7 +214,6 @@ GObject* GameWorld::GetObstacle(char *name)
     gbox =  new GGroundBox(); \
     gbox->Load("stone ground"); \
     gbox->SetObjectPosition((x),50 - gbox->height + (y_offset)); \
-    gbox->SetVelocity(ccp(-4, 0)); \
     bottomObjects.push_back(gbox); \
     this->addChild(gbox->Node()); \
 }
@@ -223,11 +223,9 @@ GObject* GameWorld::GetObstacle(char *name)
     upBox =  new GGroundBox(); \
     upBox->Load("grass rock"); \
     upBox->SetObjectPosition((x), designSize.height-40 ); \
-    upBox->SetVelocity(ccp(-4, 0)); \
     upperObjects.push_back(upBox); \
     this->addChild(upBox->Node()); \
 }
-
 
 void GameWorld::InitMap()
 {
@@ -246,6 +244,10 @@ void GameWorld::InitMap()
     AddUpperBox(100+3*upBox->width);
     AddUpperBox(100+4*upBox->width);
     AddUpperBox(100+5*upBox->width);
+
+    CCPoint v = ccp( -speed, 0);
+    set_objects_velocity(bottomObjects, v);
+    set_objects_velocity(upperObjects, v);
 }
 
 //debug
@@ -305,8 +307,7 @@ void GameWorld::RenewMap()
                 float groundX = pos.x+w+x_gap;
                 float groundY = 50+y_offset;
                 tree->SetObjectPosition( groundX+20, groundY );
-                GGroundBox *gbox = (GGroundBox*)tree;
-                gbox->SetVelocity(ccp(-4, 0));
+                tree->SetVelocity(ccp(-speed, 0));
                 CCLog("Add a tree");
             }
         }
@@ -329,6 +330,14 @@ void GameWorld::RenewMap()
             first_obj->state = OBJ_ACTIVE;
         }
     }
+
+    //speed difficulty control
+    /*
+    CCPoint v = ccp(-speed, 0);
+    set_objects_velocity(bottomObjects, v);
+    set_objects_velocity(upperObjects, v);
+    set_objects_velocity(obstacles, v);
+    */
 }
 
 bool GameWorld::SideTest(GObject *obj)
@@ -348,10 +357,8 @@ bool GameWorld::SideTest(GObject *obj)
     CCPoint p2(player_pos.x+player_w-12, player_pos.y+15);
 
     //if speed is very fast, tunneling could happen
-    if(o1.x >= p1.x && o1.x <= p2.x) {
-        if(p1.y >= o1.y && p1.y <= o2.y) {
-            return true;
-        }
+    if( SegmentsTest(o1, o2, p1, p2) ) {
+        return true;
     }
 
     return false;
@@ -374,10 +381,8 @@ bool GameWorld::TopSideTest(GObject *obj)
     CCPoint p2(player_pos.x+player_w-12, player_pos.y+player_h-10);
 
     //if speed is very fast, tunneling could happen
-    if(o1.x >= p1.x && o1.x <= p2.x) {
-        if(p1.y >= o1.y && p1.y <= o2.y) {
-            return true;
-        }
+    if( SegmentsTest(o1, o2, p1, p2) ) {
+        return true;
     }
 
     return false;
@@ -397,19 +402,17 @@ bool GameWorld::BottomTest(GObject *obj)
     CCPoint p2(player_pos.x+player_w-12, player_pos.y+player_h-15);
     CCPoint o1(pos.x, pos.y+h-1);
     CCPoint o2(pos.x+w-1, pos.y+h-1);
-    if(o1.y > p1.y && o1.y < p2.y) {
-        if(o1.x < p1.x && o2.x > p1.x){
-            return true;
-        }
+
+    if( SegmentsTest(p1, p2, o1, o2) ) {
+        return true;
     }
 
     //left bottom sensor segment
     p1 = ccp(player_pos.x+12, player_pos.y-4);
     p2 = ccp(player_pos.x+12, player_pos.y+player_h-15);
-    if(o1.y > p1.y && o1.y < p2.y) {
-        if(o1.x < p1.x && o2.x > p1.x){
-            return true;
-        }
+
+    if( SegmentsTest(p1, p2, o1, o2) ) {
+        return true;
     }
 
     return false;
@@ -429,17 +432,26 @@ bool GameWorld::TopTest(GObject *obj)
     CCPoint p2(player_pos.x+player_w-12, player_pos.y+player_h+4);
     CCPoint o1(pos.x, pos.y);
     CCPoint o2(pos.x+w-1, pos.y);
-    if(o1.y > p1.y && o1.y < p2.y) {
-        if(o1.x < p1.x && o2.x > p1.x){
-            return true;
-        }
+
+    if( SegmentsTest(p1, p2, o1, o2) ) {
+        return true;
     }
 
     //left bottom sensor segment
     p1 = ccp(player_pos.x+12, player_pos.y+player_h-20);
     p2 = ccp(player_pos.x+12, player_pos.y+player_h+4);
-    if(o1.y > p1.y && o1.y < p2.y) {
-        if(o1.x < p1.x && o2.x > p1.x){
+
+    if( SegmentsTest(p1, p2, o1, o2) ) {
+        return true;
+    }
+
+    return false;
+}
+
+bool GameWorld::SegmentsTest(CCPoint b, CCPoint t, CCPoint l, CCPoint r)
+{
+    if(l.y > b.y && l.y < t.y) {
+        if(l.x < b.x && r.x > b.x){
             return true;
         }
     }
@@ -556,6 +568,9 @@ void GameWorld::step(float dt)
     if( player.GetPlayerPosition().y < 10 || player.GetPlayerPosition().y > designSize.height-10) {
         GameOver();
     }
+
+    //distance
+    distance += speed;
 }
 
 void GameWorld::GameOver()

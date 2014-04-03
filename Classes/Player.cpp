@@ -2,7 +2,7 @@
 
 GPlayer::GPlayer() : width(0), height(0), state(RUN), sprite(0), applyGravity(false)
 {
-        designSize = CCEGLView::sharedOpenGLView()->getDesignResolutionSize();
+    designSize = CCEGLView::sharedOpenGLView()->getDesignResolutionSize();
 }
 
 GPlayer::~GPlayer()
@@ -146,7 +146,5 @@ void GPlayer::Step(float dt)
     //CCLog("player step position(%f, %f) velocity(%f, %f) gravity(%f, %f) state %d",
     //		pos.x, pos.y, velocity.x, velocity.y, gravity.x, gravity.y, state);
 }
-
-
 
 

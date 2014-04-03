@@ -50,22 +50,34 @@ public:
 
 protected:
     GPlayer player;
-    GTilesLayer mapLayer;
+    float speed;    //player's moving speed
+    float distance;
 
-    //map data
+    //map data and control
     vector<GObject*> bottomObjects;
     vector<GObject*> upperObjects;
     vector<GObject*> obstacles;
+   
 
     GObject* CreateObstacle(char *name);
     GObject* GetObstacle(char *name);
     void InitMap();
     void RenewMap();
+
     void PhysicsStep(float);
+
+    //collistion test
     bool SideTest(GObject *obj);
     bool TopSideTest(GObject *obj);
     bool BottomTest(GObject *obj);
     bool TopTest(GObject *obj);
+
+    //        t
+    //        |
+    // l------|------r
+    //        |
+    //        b
+    bool SegmentsTest(CCPoint b, CCPoint t, CCPoint l, CCPoint r);
 
     //scene switch
     void GameOver();
@@ -73,6 +85,13 @@ protected:
     //debug
     void dump_bottomObjects();
 };
+
+#define set_objects_velocity(objs, v) \
+{\
+    for(int i=0; i<(objs).size(); ++i) { \
+        (objs)[i]->SetVelocity(v);\
+    }\
+}
 
 #endif
 

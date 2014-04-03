@@ -13,8 +13,9 @@ typedef enum{
 
 class GObject : public CCNode {
 public:
-    GObject() : state(OBJ_INVALID) {
-
+    GObject() : state(OBJ_INVALID) 
+    {
+        velocity = ccp(0.0, 0.0);
     }
 
     virtual ~GObject(){
@@ -36,10 +37,15 @@ public:
     virtual void GetAABB(CCPoint &o, float &w, float &h) {
     }
 
+    virtual void SetVelocity( CCPoint v) {
+    	velocity = v;
+    }
+
     ObjectState state;
     float width;
     float height;
     char objName[50];
+    CCPoint velocity;
 };
 
 

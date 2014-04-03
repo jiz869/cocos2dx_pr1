@@ -9,7 +9,6 @@ class GBox : public GObject {
 protected:
     CCSpriteBatchNode *batchNode;
     CCTexture2D *texture;
-    CCPoint velocity;
 public:
     GBox();
     ~GBox();
@@ -26,13 +25,7 @@ public:
     virtual void Step(float dt) {
     }
 
-    virtual void SetVelocity( CCPoint v) {
-    	velocity = v;
-    }
-
     virtual void GetAABB(CCPoint &, float &w, float &h);
-
-
 };
 
 #endif;
