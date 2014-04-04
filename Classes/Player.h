@@ -4,13 +4,20 @@
 #include "cocos2d.h"
 using namespace cocos2d;
 
+const float JMP_Y_SPEED = 7.0;
+const float GRAVITY_Y = -0.4;
+const CCPoint INIT_POS = ccp(100, 100);
+const float SHORT_JMP_SPEED = 3.0;
+const float INIT_GAME_SPEED = 3.0;
+
 class GPlayer : public CCObject
 {
-
     CCTexture2D *playerTexture;
     CCAnimation *animationRun;
     CCAnimation *animationJumpUp;
     CCAnimation *animationJumpDown;
+    float animRunRate;
+
     float width;    // width of single frame in sprite sheet
     float height;
     CCSprite *sprite;
@@ -66,6 +73,7 @@ public:
     //data
     ePlayerState state;
 };
+
 #define on_the_air(s) (s == JMP1 || s == JMP2)
 #define in_upper (sprite->getPosition().y > designSize.height/2)
 

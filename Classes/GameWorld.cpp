@@ -36,9 +36,17 @@ GameWorld::~GameWorld()
 
 }
 
-GameWorld::GameWorld()
+GameWorld::GameWorld() : distance(0.0), difficulty(0)
 {
 
+}
+
+void GameWorld::InitLevel()
+{
+    levels[0].minDistance = 0; levels[0].difficulty = 0; levels[0].speed = 3;
+    levels[1].minDistance = 4*designSize.width; levels[1].difficulty = 1; levels[1].speed = 3.5;
+    levels[2].minDistance = 10*designSize.width; levels[2].difficulty = 2; levels[2].speed = 4;
+    levels[3].minDistance = 20*designSize.width; levels[3].difficulty = 3; levels[3].speed = 5;
 }
 
 CCScene* GameWorld::scene()
@@ -117,8 +125,10 @@ bool GameWorld::init()
         player.Run();
 
         //add map
-        speed = 3;
+        speed = INIT_GAME_SPEED;
         InitMap();
+
+        InitLevel();
 
         bRet = true;
 	} while (0);
@@ -147,10 +157,10 @@ void GameWorld::ccTouchesEnded(CCSet* touches, CCEvent* event)
 
 	//CCLog("++++++++after  x:%f, y:%f", location.x, location.y);
     CCPoint v = player.GetPlayerVelocity();
-    if(v.y > 3  ) {
-       player.SetPlayerVelocity(0, 3);
+    if(v.y > SHORT_JMP_SPEED) {
+       player.SetPlayerVelocity(0, SHORT_JMP_SPEED);
     }else if(v.y < -3) {
-       player.SetPlayerVelocity(0, -3);
+       player.SetPlayerVelocity(0, -SHORT_JMP_SPEED);
     }
 }
 
@@ -331,13 +341,19 @@ void GameWorld::RenewMap()
         }
     }
 
-    //speed difficulty control
-    /*
-    CCPoint v = ccp(-speed, 0);
-    set_objects_velocity(bottomObjects, v);
-    set_objects_velocity(upperObjects, v);
-    set_objects_velocity(obstacles, v);
-    */
+    //speed control
+    int idx=0;
+    for(int i=0; i < NUM_LEVELS; ++i) {
+        if(distance >= levels[i].minDistance) 
+            idx = i;
+    }
+    if( speed != levels[idx].speed ) {
+        speed = levels[idx].speed;
+        CCPoint v = ccp(-speed, 0);
+        set_objects_velocity(bottomObjects, v);
+        set_objects_velocity(upperObjects, v);
+        set_objects_velocity(obstacles, v);
+    }
 }
 
 bool GameWorld::SideTest(GObject *obj)
@@ -530,18 +546,11 @@ void GameWorld::PhysicsStep(float dt)
         //player is on the air
         //CCLog("player is on the air. enable gravity");
         player.EnableGravity();
-        /*
-        if( player.state == GPlayer::RUN ) {
-            CCLog("player on the air. set player jump down");
-            player.JumpDown();
-        }
-        */
     }
 }
 
 void GameWorld::step(float dt)
 {
-	//mapLayer.Step(dt);
     //dump_bottomObjects();
 
     unsigned int n = bottomObjects.size();

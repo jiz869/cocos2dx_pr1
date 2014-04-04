@@ -4,7 +4,7 @@
 #include <vector>
 #include "cocos2d.h"
 #include "Player.h"
-#include "TilesLayer.h"
+
 #include "GroundBox.h"
 
 using namespace cocos2d;
@@ -13,6 +13,14 @@ using namespace std;
 struct InterSectionResult{
     bool intersect;
 };
+
+struct LevelData{
+    float minDistance;  // minmum distance
+    int difficulty;  //difficulty level
+    float speed;    //speed
+};
+
+const int NUM_LEVELS = 4;
 //////////////////////////////////////////////////////////////////
 class GameWorld : public cocos2d::CCLayerColor
 {
@@ -52,12 +60,16 @@ protected:
     GPlayer player;
     float speed;    //player's moving speed
     float distance;
+    int difficulty;
+    LevelData levels[NUM_LEVELS];
+
+    void InitLevel();
 
     //map data and control
     vector<GObject*> bottomObjects;
     vector<GObject*> upperObjects;
     vector<GObject*> obstacles;
-   
+
 
     GObject* CreateObstacle(char *name);
     GObject* GetObstacle(char *name);
