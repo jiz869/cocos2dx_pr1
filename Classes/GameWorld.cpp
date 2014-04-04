@@ -44,9 +44,9 @@ GameWorld::GameWorld() : distance(0.0), difficulty(0)
 void GameWorld::InitLevel()
 {
     levels[0].minDistance = 0; levels[0].difficulty = 0; levels[0].speed = 3;
-    levels[1].minDistance = 4*designSize.width; levels[1].difficulty = 1; levels[1].speed = 3.5;
-    levels[2].minDistance = 10*designSize.width; levels[2].difficulty = 2; levels[2].speed = 4;
-    levels[3].minDistance = 20*designSize.width; levels[3].difficulty = 3; levels[3].speed = 5;
+    levels[1].minDistance = 2*designSize.width; levels[1].difficulty = 1; levels[1].speed = 3.5;
+    levels[2].minDistance = 4*designSize.width; levels[2].difficulty = 2; levels[2].speed = 4;
+    levels[3].minDistance = 8*designSize.width; levels[3].difficulty = 3; levels[3].speed = 5;
 }
 
 CCScene* GameWorld::scene()
@@ -92,6 +92,7 @@ bool GameWorld::init()
         //bg->setScaleY(yscale);
         this->addChild( bg, -0.1 );
 
+#if 0
 		//Add a menu item with "X" image, which is clicked to quit the program.
 		// Create a "close" menu item with close icon, it's an auto release object.
 		CCMenuItemImage *pCloseItem = CCMenuItemImage::create(
@@ -115,6 +116,7 @@ bool GameWorld::init()
 
 		// Add the menu to GameWorld layer as a child layer.
 		this->addChild(pMenu, 2);
+#endif
 
 		this->setTouchEnabled(true);
         this->schedule( schedule_selector(GameWorld::step) );
@@ -129,6 +131,7 @@ bool GameWorld::init()
         InitMap();
 
         InitLevel();
+        EstimatePhysics();
 
         bRet = true;
 	} while (0);
@@ -201,6 +204,7 @@ GObject* GameWorld::CreateObstacle(char *name)
     gbox->Load(name);
     obstacles.push_back(gbox);
     this->addChild(gbox->Node());
+    gbox->state = OBJ_ACTIVE;
     return gbox;
 }
 
@@ -217,6 +221,27 @@ GObject* GameWorld::GetObstacle(char *name)
 
     //need to create a new obstacle object
     return CreateObstacle(name);
+}
+
+GObject* GameWorld::GetObject(vector<GObject*> &objs, char *name)
+{
+    if(objs.size() > 0) {
+        for(int i=0; i < objs.size(); ++i) {
+            if(objs[i]->state == OBJ_INACTIVE && (strncmp(objs[i]->objName, name, 50) == 0) ) {
+            	objs[i]->state = OBJ_ACTIVE;
+                return objs[i];
+            }
+        }
+    }
+
+    CCLog("creat a new %s object", name);
+    GGroundBox *gbox;
+    gbox =  new GGroundBox();
+    gbox->Load(name);
+    objs.push_back(gbox);
+    this->addChild(gbox->Node());
+    gbox->state = OBJ_ACTIVE;
+    return gbox;
 }
 
 #define AddStoneGround(x, y_offset) \
@@ -247,6 +272,7 @@ void GameWorld::InitMap()
     AddStoneGround(350, 10);
     AddStoneGround(470, -10);
     AddStoneGround(600, 0);
+    AddStoneGround(800, 0);
 
     AddUpperBox(100);
     AddUpperBox(100+upBox->width);
@@ -273,6 +299,114 @@ void GameWorld::dump_bottomObjects()
     }
 }
 
+
+void GameWorld::EstimatePhysics()
+{
+    //t in time unit ( frame time)
+    int t_up = (int)(JMP_Y_SPEED / -GRAVITY_Y) + 1;
+
+    CCPoint v = ccp(0, JMP_Y_SPEED);
+    CCPoint s_up = ccp(0.0, 0.0);
+    for(int t=0; t<t_up; ++t) {
+        s_up = s_up + v;
+        v = v + ccp(0, GRAVITY_Y);
+    }
+    //s_up.y now is the maxmum distance player can jump
+    maxJmp1Height = s_up.y;
+
+    CCPoint s_down = ccp(0.0, 0.0);
+    v = ccp(0.0, 0.0);
+    int t_down = 0;
+    while(s_down.y > -s_up.y) {
+        s_down = s_down + v;
+        v = v + ccp(0, GRAVITY_Y);
+        t_down++;
+    }
+
+    //now t_down is the time needed to jump down from the highest point
+    maxJmp1Distance = (t_up + t_down) * speed;
+
+    //flip jump estimation
+    CCPoint s_up2 = ccp(0.0, designSize.height/2 - 32 - s_up.y);
+    CCPoint s = ccp(0.0, 0.0);
+    int t2=0;
+    v = ccp(0.0, JMP_Y_SPEED);
+    while(s.y < s_up2.y) {
+        s = s + v;
+        v = v + ccp(0, GRAVITY_Y);
+        t2++;
+    }
+    maxFlipJmpDistance = (t_up + t_down + t2)*speed;
+}
+
+void GameWorld::AddZigZag(GObject *bottomObj, GObject *upperObj)
+{
+    //------   ZigZag
+    float x=0;
+
+    //bottom object AABB
+    CCPoint bpos;
+    float bw, bh;
+    bottomObj->GetAABB(bpos, bw, bh);
+
+    //upper object AABB
+    CCPoint upos;
+    float uw, uh;
+    upperObj->GetAABB(upos, uw, uh);
+
+    //add new bottom object
+    float x_gap = maxJmp1Distance;
+    GObject *obj = GetObject(bottomObjects, "stone ground");
+    obj->SetObjectPosition(bpos.x+bw+x_gap, 32*2-obj->height);
+    obj->SetVelocity( ccp(-speed, 0) );
+    x = bpos.x+bw+x_gap+obj->width;
+
+    //upper one
+    x_gap = maxFlipJmpDistance;
+    obj = GetObject(upperObjects, "grass rock");
+    obj->SetObjectPosition(x+x_gap, designSize.height-64);
+    obj->SetVelocity( ccp(-speed, 0) );
+    x = x+x_gap+obj->width;
+
+    //another bottom one
+    x_gap = maxFlipJmpDistance;
+    obj = GetObject(bottomObjects, "stone ground");
+    obj->SetObjectPosition(x+x_gap, 32*2-obj->height);
+    obj->SetVelocity( ccp(-speed, 0) );
+    x = x + x_gap + obj->width;
+}
+
+void GameWorld::AddSequentialJmp2(GObject *bottomObj, GObject *upperObj)
+{
+    float x=0;
+    //bottom object AABB
+    CCPoint bpos;
+    float bw, bh;
+    bottomObj->GetAABB(bpos, bw, bh);
+
+    //upper object AABB
+    CCPoint upos;
+    float uw, uh;
+    upperObj->GetAABB(upos, uw, uh);
+
+    //add new bottom object
+    int n = getRandom(4, 6);
+    float x_gap = 2*maxJmp1Distance;
+    GObject *obj;
+    x = bpos.x+bw+x_gap;
+    for(int i=0; i<n; ++i) {
+        obj = GetObject(bottomObjects, "stone ground");
+        obj->SetObjectPosition(x, 32*2-obj->height);
+        obj->SetVelocity( ccp(-speed, 0) );
+        x = x+x_gap+obj->width;
+    }
+
+    //add a upper to make sure no upper obj showed up in this area
+    obj = GetObject(upperObjects, "grass rock");
+    obj->SetObjectPosition(x-20, designSize.height-64);
+    obj->SetVelocity( ccp(-speed, 0) );
+}
+
 static bool CompareX2(GObject* a, GObject* b)
 {
     CCPoint pos_a, pos_b;
@@ -286,65 +420,10 @@ static bool CompareX2(GObject* a, GObject* b)
 
 void GameWorld::RenewMap()
 {
-    //sort it based on right most x cooridinate
-    sort( bottomObjects.begin(), bottomObjects.end(), CompareX2 );
-    sort( upperObjects.begin(), upperObjects.end(), CompareX2 );
-    if( obstacles.size() > 0)
-        sort( obstacles.begin(), obstacles.end(), CompareX2 );
-
-    GObject *last_obj = bottomObjects.back();
-    GObject *first_obj = bottomObjects.front();
-
-    CCPoint pos;
-    float w, h;
-
-    //check last object
-    last_obj->GetAABB(pos, w, h);
-
-    //to do: add logic to generate new map objects
-    if(pos.x+w < designSize.width) {
-    	float y_offset = (float)getRandom(-10, 10);
-    	float x_gap = (float)getRandom(50, 300);
-        if(first_obj->state != OBJ_INACTIVE) {
-            CCLog("No invalid object available!");
-        }else{
-            first_obj->SetObjectPosition(pos.x+w+x_gap, 50-first_obj->height + y_offset);
-            first_obj->state = OBJ_ACTIVE;
-
-            //add a tree
-            if( x_gap < 200) {
-                GObject *tree = GetObstacle("tree");
-                float groundX = pos.x+w+x_gap;
-                float groundY = 50+y_offset;
-                tree->SetObjectPosition( groundX+20, groundY );
-                tree->SetVelocity(ccp(-speed, 0));
-                CCLog("Add a tree");
-            }
-        }
-    }
-
-    //upper objects
-    last_obj = upperObjects.back();
-    first_obj = upperObjects.front();
-    //check last object
-    last_obj->GetAABB(pos, w, h);
-
-    //to do: add logic to generate new map objects
-    if(pos.x+w < designSize.width) {
-    	float y_offset = (float)getRandom(-10, 10);
-    	float x_gap = (float)getRandom(50, 150);
-        if(first_obj->state != OBJ_INACTIVE) {
-            CCLog("No invalid object available for upper objects");
-        }else{
-            first_obj->SetObjectPosition(pos.x+w+x_gap, designSize.height-40);
-            first_obj->state = OBJ_ACTIVE;
-        }
-    }
-
     //speed control
     int idx=0;
     for(int i=0; i < NUM_LEVELS; ++i) {
-        if(distance >= levels[i].minDistance) 
+        if(distance >= levels[i].minDistance)
             idx = i;
     }
     if( speed != levels[idx].speed ) {
@@ -352,8 +431,80 @@ void GameWorld::RenewMap()
         CCPoint v = ccp(-speed, 0);
         set_objects_velocity(bottomObjects, v);
         set_objects_velocity(upperObjects, v);
-        set_objects_velocity(obstacles, v);
+        //set_objects_velocity(obstacles, v);
+        EstimatePhysics();
     }
+
+    //sort it based on right most x cooridinate
+    sort( bottomObjects.begin(), bottomObjects.end(), CompareX2 );
+    sort( upperObjects.begin(), upperObjects.end(), CompareX2 );
+    if( obstacles.size() > 0)
+        sort( obstacles.begin(), obstacles.end(), CompareX2 );
+
+    GObject *last_bottom_obj = bottomObjects.back();
+
+    //bottom object
+    CCPoint bpos;
+    float bw, bh;
+    last_bottom_obj->GetAABB(bpos, bw, bh);
+
+    //upper object
+    GObject *last_upper_obj = upperObjects.back();
+    CCPoint upos;
+    float uw, uh;
+    last_upper_obj->GetAABB(upos, uw, uh);
+
+    //to do: add logic to generate new map objects
+#if 0
+    if(bpos.x+bw < designSize.width) {
+        float y_offset = (float)getRandom(-10, 10);
+        //float x_gap = (float)getRandom(50, 300);
+        float x_gap = 1.1*maxJmp1Distance;
+
+        //add new bottom object
+        GObject *obj = GetObject(bottomObjects, "stone ground");
+        //first_obj->SetObjectPosition(pos.x+w+x_gap, 50-first_obj->height + y_offset);
+        obj->SetObjectPosition(bpos.x+bw+x_gap, 32-obj->height);
+        obj->SetVelocity( ccp(-speed, 0) );
+
+        //add a tree
+        if( x_gap < 200) {
+            //GObject *tree = GetObstacle("tree");
+            GObject *tree = GetObject(obstacles, "tree");
+            float groundX = bpos.x+bw+x_gap;
+            //float groundY = 50+y_offset;
+            float groundY = 32;
+            tree->SetObjectPosition( groundX+20, groundY );
+            tree->SetVelocity(ccp(-speed, 0));
+        }
+    }
+
+
+    //to do: add logic to generate new map objects
+    if(upos.x+uw < designSize.width) {
+    	float y_offset = (float)getRandom(-10, 10);
+    	float x_gap = (float)getRandom(50, 150);
+        GObject *obj = GetObject(upperObjects, "grass rock");
+        obj->SetObjectPosition(upos.x+uw+x_gap, designSize.height-40);
+        obj->SetVelocity( ccp(-speed, 0) );
+    }
+#endif
+    if(upos.x+uw < designSize.width) {
+        int rn = getRandom(1, 10);
+
+        if( rn > 5) {
+            AddZigZag(last_bottom_obj, last_upper_obj);
+        }else {
+            AddSequentialJmp2(last_bottom_obj, last_upper_obj);
+        }
+
+        float h = getRandom(80, 160);
+        GObject *obj = GetObject(obstacles, "flying stone");
+        obj->SetObjectPosition(upos.x+uw+maxJmp1Distance, h);
+        float s = getRandom(1, 5);
+        obj->SetVelocity( ccp(-speed-s, 0) );
+    }
+
 }
 
 bool GameWorld::SideTest(GObject *obj)
@@ -484,6 +635,19 @@ void GameWorld::PhysicsStep(float dt)
                       player_pos.y);
     CCPoint player_lb(player_pos.x, player_pos.y);
 
+    //obstacles test
+    for(int i=0; i < obstacles.size(); ++i) {
+        CCPoint pos;
+        float w, h;
+        GObject *obj = obstacles[i];
+        obj->GetAABB(pos, w, h);
+
+        if( SideTest(obj) || BottomTest(obj) || TopSideTest(obj) || TopTest(obj)){
+            CCLog("bump into obstacle");
+            GameOver();
+        }
+    }
+
     //check walk intersect with player
     unsigned int n = bottomObjects.size();
     GObject *on_obj=0;
@@ -531,13 +695,13 @@ void GameWorld::PhysicsStep(float dt)
 
     if(on_obj) {
         if(player.state != GPlayer::RUN) {
-            CCLog("intersect at a bottom solid tile. set player run");
+            //CCLog("intersect at a bottom solid tile. set player run");
             player.Run();
             player.SetPlayerPosition(player_pos.x, pos.y+h);
         }
     } else if( on_upObj ) {
         if(player.state != GPlayer::RUN) {
-            CCLog("intersect at a upper solid tile. set player run");
+            //CCLog("intersect at a upper solid tile. set player run");
             player.Run();
             player.SetPlayerPosition(player_pos.x, upPos.y-player_h);
         }
@@ -584,8 +748,11 @@ void GameWorld::step(float dt)
 
 void GameWorld::GameOver()
 {
+    char s[200];
+    snprintf(s, 200, "Score: %d", (int)distance);
     GameOverScene *gameOverScene = GameOverScene::create();
-    gameOverScene->getLayer()->getLabel()->setString("Game Over");
+    //gameOverScene->getLayer()->getLabel()->setString("Game Over");
+    gameOverScene->getLayer()->getLabel()->setString(s);
 	CCDirector::sharedDirector()->replaceScene( gameOverScene );
 }
 

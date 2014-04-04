@@ -11,6 +11,7 @@ class GGroundBox : public GBox {
     void LoadStoneGround();
     void LoadGrassRock();
     void LoadTree();
+    void LoadFlyingStone();
     //general tiles loading function
     //nc - number of columns
     //nr - number of rows
@@ -18,7 +19,7 @@ class GGroundBox : public GBox {
     //tile_xy - vector of x,y coordinates for corresponding tile
     //tile_xy should contain corordinates in row based way
     // tile_xy[nc*r + c]
-    void LoadTiles(int nc, int nr, float w, float h, 
+    void LoadTiles(int nc, int nr, float w, float h,
             char *fn, vector<CCPoint> &tile_xy, bool flipY=false);
 
 public:
@@ -28,6 +29,7 @@ public:
     virtual void Load(char *name);
     virtual void SetObjectPosition(float x, float y);
     virtual void Step(float dt);
+    virtual void GetAABB(CCPoint &, float &w, float &h);
 
 };
 

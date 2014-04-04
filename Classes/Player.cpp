@@ -48,7 +48,7 @@ void GPlayer::Run()
     velocity = ccp(0.0, 0.0);
     gravity = ccp(0.0, 0.0);
     applyGravity = false;
-    CCLog("set player state RUN");
+    //CCLog("set player state RUN");
 }
 
 void GPlayer::JumpUp()
@@ -62,7 +62,7 @@ void GPlayer::JumpUp()
         }else{
             velocity = ccp(0.0, JMP_Y_SPEED);
         }
-        CCLog("set player state JMPx");
+        //CCLog("set player state JMPx");
     }
 }
 
@@ -73,7 +73,7 @@ void GPlayer::JumpDown()
     sprite->setTextureRect( CCRectMake(6*width, 1*height+1, width, height) );
     if( state == RUN) {
         state = JMP1;
-        CCLog("JumpDown: set player state JMP1");
+        //CCLog("JumpDown: set player state JMP1");
     }
 }
 
@@ -126,7 +126,7 @@ void GPlayer::Step(float dt)
 
     if( oldVelocity.y == 0.0 && velocity.y != 0.0 && state == RUN) {
         state = JMP1;
-        CCLog("set player state JMP1");
+        //CCLog("set player state JMP1");
     }
 
     //check and set gravity
@@ -140,7 +140,7 @@ void GPlayer::Step(float dt)
         JumpDown();
         CCLog("flip gravity!");
     }else if(oldVelocity.y * velocity.y <= 0.0 && velocity.y * gravity.y > 0.0) {
-    	CCLog("player's old velocity.y %f new velocity.y %f)", oldVelocity.y, velocity.y);
+    	//CCLog("player's old velocity.y %f new velocity.y %f)", oldVelocity.y, velocity.y);
         JumpDown();
     }
 

@@ -68,6 +68,14 @@ void GGroundBox::LoadGrassRock()
     LoadTiles(4, 1, 32, 32, "tiles2.png", tiles, true);
 }
 
+void GGroundBox::LoadFlyingStone()
+{
+    vector<CCPoint> tiles;
+    tiles.reserve(1);
+    tiles[0] = ccp(17*32+1, 129);
+    LoadTiles(1, 1, 31, 31, "tiles.png", tiles, false);
+}
+
 void GGroundBox::LoadTree()
 {
     vector<CCPoint> tiles;
@@ -84,8 +92,30 @@ void GGroundBox::Load(char *name)
         LoadGrassRock();
     }else if( strncmp(name, "tree", 50) == 0 ){
         LoadTree();
+    }else if( strncmp(name, "flying stone", 50) == 0 ){
+        LoadFlyingStone();
+    }else {
+        CCLog("Cannot find object with name %s", name);
     }
     strncpy(objName, name, 50);
+}
+
+void GGroundBox::GetAABB(CCPoint &o, float &w, float &h)
+{
+    o = batchNode->getPosition();
+    w = width;
+    h = height;
+    if(strncmp(objName, "tree", 50) == 0) {
+    	o.x += 15;
+    	o.y += 15;
+    	w -= 30;
+    	h -= 30;
+    }else if(strncmp(objName, "flying stone", 50) == 0) {
+    	o.x += 10;
+    	o.y += 10;
+    	w -= 20;
+    	h -= 20;
+    }
 }
 
 void GGroundBox::SetObjectPosition(float x, float y)

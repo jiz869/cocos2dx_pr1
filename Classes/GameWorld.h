@@ -64,6 +64,11 @@ protected:
     LevelData levels[NUM_LEVELS];
 
     void InitLevel();
+    void EstimatePhysics();
+
+    float maxJmp1Distance;
+    float maxJmp1Height;
+    float maxFlipJmpDistance;
 
     //map data and control
     vector<GObject*> bottomObjects;
@@ -71,10 +76,14 @@ protected:
     vector<GObject*> obstacles;
 
 
+    GObject* GetObject(vector<GObject*> &objs, char *name);
     GObject* CreateObstacle(char *name);
     GObject* GetObstacle(char *name);
+
     void InitMap();
     void RenewMap();
+    void AddZigZag(GObject *bottomObj, GObject *upperObj);
+    void AddSequentialJmp2(GObject *bottomObj, GObject *upperObj);
 
     void PhysicsStep(float);
 
