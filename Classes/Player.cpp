@@ -35,6 +35,7 @@ CCSprite* GPlayer::CreatePlayerSprite()
         animationRun->addSpriteFrame(frame);
     }
 
+    gravity_line_y = designSize.height/2;
     return sprite;
 }
 
@@ -85,7 +86,7 @@ void GPlayer::EnableGravity()
 void GPlayer::UpdateGravity()
 {
     //determine gravity direction (now it's based on player's position)
-    if( GetPlayerPosition().y <= designSize.height/2 ) {
+    if( GetPlayerPosition().y <= gravity_line_y ) {
         gravity = ccp(0.0, GRAVITY_Y);
         sprite->setFlipY(false);
     }else{
@@ -98,6 +99,9 @@ void GPlayer::SwitchGravity()
 {
    //important: clear velocity
    velocity = ccp(0.0, 0.0);
+   if(state == JMP1) {
+	   state = JMP2;
+   }
 }
 
 void GPlayer::GetAABB(CCPoint &o, float &w, float &h)
@@ -134,8 +138,8 @@ void GPlayer::Step(float dt)
 
     //velocity and gravity have the same direction
 
-    if( (oldPosition.y <= designSize.height/2 && pos.y > designSize.height/2) ||
-        (oldPosition.y > designSize.height/2 && pos.y <= designSize.height/2) ) {
+    if( (oldPosition.y <= gravity_line_y && pos.y > gravity_line_y) ||
+        (oldPosition.y > gravity_line_y && pos.y <= gravity_line_y) ) {
         SwitchGravity();
         JumpDown();
         CCLog("flip gravity!");

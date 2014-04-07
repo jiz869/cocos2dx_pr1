@@ -2,6 +2,8 @@
 #include "GameWorld.h"
 #include "GameOverScene.h"
 #include "AnimationScene.h"
+#include "SimpleAudioEngine.h"
+using namespace CocosDenshion;
 
 using namespace cocos2d;
 static bool PointInSprite(CCPoint &p, CCSprite &sprite);
@@ -133,7 +135,17 @@ bool GameWorld::init()
         InitLevel();
         EstimatePhysics();
 
+#if 0
+        //gravity line
+        CCDrawNode *lineNode = CCDrawNode::create();
+        addChild(lineNode, 0);
+        lineNode->drawSegment(ccp(0,player.gravity_line_y), ccp(designSize.width, player.gravity_line_y),
+        		0.5, ccc4f(180,180,180,100));
+#endif
         bRet = true;
+
+        // play background music
+        SimpleAudioEngine::sharedEngine()->playBackgroundMusic(BACKGROUND_MUSIC1, true);
 	} while (0);
 
 	return bRet;
@@ -355,9 +367,14 @@ void GameWorld::AddZigZag(GObject *bottomObj, GObject *upperObj)
     upperObj->GetAABB(upos, uw, uh);
 
     //add new bottom object
+    if(bpos.x + bw < designSize.width) {
+    	x = designSize.width+1;
+    }else{
+    	x = bpos.x+bw;
+    }
     float x_gap = maxJmp1Distance;
     GObject *obj = GetObject(bottomObjects, "stone ground");
-    obj->SetObjectPosition(bpos.x+bw+x_gap, 32*2-obj->height);
+    obj->SetObjectPosition(x+x_gap, 32*2-obj->height);
     obj->SetVelocity( ccp(-speed, 0) );
     x = bpos.x+bw+x_gap+obj->width;
 
@@ -455,40 +472,6 @@ void GameWorld::RenewMap()
     last_upper_obj->GetAABB(upos, uw, uh);
 
     //to do: add logic to generate new map objects
-#if 0
-    if(bpos.x+bw < designSize.width) {
-        float y_offset = (float)getRandom(-10, 10);
-        //float x_gap = (float)getRandom(50, 300);
-        float x_gap = 1.1*maxJmp1Distance;
-
-        //add new bottom object
-        GObject *obj = GetObject(bottomObjects, "stone ground");
-        //first_obj->SetObjectPosition(pos.x+w+x_gap, 50-first_obj->height + y_offset);
-        obj->SetObjectPosition(bpos.x+bw+x_gap, 32-obj->height);
-        obj->SetVelocity( ccp(-speed, 0) );
-
-        //add a tree
-        if( x_gap < 200) {
-            //GObject *tree = GetObstacle("tree");
-            GObject *tree = GetObject(obstacles, "tree");
-            float groundX = bpos.x+bw+x_gap;
-            //float groundY = 50+y_offset;
-            float groundY = 32;
-            tree->SetObjectPosition( groundX+20, groundY );
-            tree->SetVelocity(ccp(-speed, 0));
-        }
-    }
-
-
-    //to do: add logic to generate new map objects
-    if(upos.x+uw < designSize.width) {
-    	float y_offset = (float)getRandom(-10, 10);
-    	float x_gap = (float)getRandom(50, 150);
-        GObject *obj = GetObject(upperObjects, "grass rock");
-        obj->SetObjectPosition(upos.x+uw+x_gap, designSize.height-40);
-        obj->SetVelocity( ccp(-speed, 0) );
-    }
-#endif
     if(upos.x+uw < designSize.width) {
         int rn = getRandom(1, 10);
 

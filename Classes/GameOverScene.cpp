@@ -58,10 +58,13 @@ bool GameOverLayer::init()
 {
 	if ( CCLayerColor::initWithColor( ccc4(255,255,255,255) ) )
 	{
+		CCSprite *bg = CCSprite::create("meadow.jpg");
+		this->addChild( bg );
+
 		CCSize winSize = CCDirector::sharedDirector()->getWinSize();
-		this->_label = CCLabelTTF::create("","Artial", 32);
+		this->_label = CCLabelTTF::create("","American Typewriter", 32);
 		_label->retain();
-		_label->setColor( ccc3(0, 0, 0) );
+		_label->setColor( ccc3(0, 0, 128) );
 		_label->setPosition( ccp(winSize.width/2, winSize.height/2) );
 		this->addChild(_label);
 

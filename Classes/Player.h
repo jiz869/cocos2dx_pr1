@@ -28,6 +28,7 @@ class GPlayer : public CCObject
     CCSize designSize;
     bool applyGravity;
 
+
 public:
     enum ePlayerState {
         RUN,
@@ -72,10 +73,11 @@ public:
 
     //data
     ePlayerState state;
+    float gravity_line_y;
 };
 
 #define on_the_air(s) (s == JMP1 || s == JMP2)
-#define in_upper (sprite->getPosition().y > designSize.height/2)
+#define in_upper (sprite->getPosition().y > gravity_line_y)
 
 #endif
 

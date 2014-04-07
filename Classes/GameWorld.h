@@ -114,5 +114,7 @@ protected:
     }\
 }
 
+#define BACKGROUND_MUSIC1 ("bg1.wav")
+
 #endif
 
